@@ -1,0 +1,75 @@
+---
+- name: net-tools
+  yum:
+    name: net-tools
+    state: latest
+
+- name: enable ipv4 forwarding sysctl
+  sysctl:
+    name: net.ipv4.ip_forward
+    value: 1
+    state: present
+
+- name: copy kubernetes repo file
+  copy:
+    src: kubernetes.repo
+    dest: /etc/yum.repos.d/kubernetes.repo
+
+# http://docs.ansible.com/ansible/latest/nmcli_module.html for cbr0
+
+- name: docker binaries
+  copy:
+    src: /vagrant/repo/docker/{{ item }}
+    dest: /usr/bin/{{ item }}
+    mode: 744
+  with_items:
+    - docker
+    - docker-containerd
+    - docker-containerd-ctr
+    - docker-containerd-shim
+    - docker-init
+    - docker-proxy
+    - docker-runc
+    - dockerd
+
+- name: docker config directory
+  file:
+    path: /etc/docker
+    state: directory
+
+- name: docker daemon.json config file
+  template:
+    src: daemon.json
+    dest: /etc/docker/daemon.json
+
+- name: docker group
+  group:
+    name: docker
+    state: present
+
+- name: docker service file
+  template:
+    src: docker.service
+    dest: /etc/systemd/system/docker.service
+
+- name: docker socket file
+  template:
+    src: docker.socket
+    dest: /etc/systemd/system/docker.socket
+
+# ansible_default_ipv4.address
+
+- name: kubernetes config directories
+  file:
+    path: /etc/kubernetes
+    state: directory
+
+- name: kubernetes binaries
+  copy:
+    src: /vagrant/repo/kubernetes/server/bin/{{ item }}
+    dest: /usr/bin/{{ item }}
+    mode: 744
+  with_items:
+    - kubelet
+  
+  # https://github.com/kubernetes/contrib/tree/master/init/systemd
