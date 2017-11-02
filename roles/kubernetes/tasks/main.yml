@@ -2,24 +2,40 @@
 - name: net-tools
   yum:
     name: net-tools
-    state: latest
-
+    state: present
+    
 - name: enable ipv4 forwarding sysctl
   sysctl:
     name: net.ipv4.ip_forward
     value: 1
     state: present
 
-- name: copy kubernetes repo file
-  copy:
-    src: kubernetes.repo
-    dest: /etc/yum.repos.d/kubernetes.repo
+- name: remove swapfile from /etc/fstab
+  mount:
+    name: swap
+    fstype: swap
+    state: absent
 
-# http://docs.ansible.com/ansible/latest/nmcli_module.html for cbr0
+- name: disable swap
+  command: swapoff -a
+  when: ansible_swaptotal_mb > 0
+
+# - name: NetworkManager-glib package
+#   yum:
+#     name: NetworkManager-glib
+#     state: present
+
+# - name: cbr0 bridge
+#   nmcli:
+#     conn_name: cbr0
+#     ifname: cbr0
+#     type: bridge
+#     ip4: 122.22.0.1/16
+#     state: present
 
 - name: docker binaries
   copy:
-    src: /vagrant/repo/docker/{{ item }}
+    src: /vagrant/private/repo/docker/{{ item }}
     dest: /usr/bin/{{ item }}
     mode: 744
   with_items:
@@ -39,7 +55,7 @@
 
 - name: docker daemon.json config file
   template:
-    src: daemon.json
+    src: daemon.json.j2
     dest: /etc/docker/daemon.json
 
 - name: docker group
@@ -49,27 +65,103 @@
 
 - name: docker service file
   template:
-    src: docker.service
+    src: docker.service.j2
     dest: /etc/systemd/system/docker.service
 
 - name: docker socket file
   template:
-    src: docker.socket
+    src: docker.socket.j2
     dest: /etc/systemd/system/docker.socket
 
-# ansible_default_ipv4.address
-
-- name: kubernetes config directories
-  file:
-    path: /etc/kubernetes
-    state: directory
+- name: docker service
+  systemd:
+    name: docker
+    state: started
+    enabled: yes
+    daemon_reload: yes
 
 - name: kubernetes binaries
   copy:
-    src: /vagrant/repo/kubernetes/server/bin/{{ item }}
+    src: /vagrant/private/repo/kubernetes/server/bin/{{ item }}
     dest: /usr/bin/{{ item }}
     mode: 744
   with_items:
     - kubelet
-  
-  # https://github.com/kubernetes/contrib/tree/master/init/systemd
+    - kube-proxy
+    - kubectl
+
+- name: kubernetes kube user
+  user:
+    name: kube
+
+- name: kubernetes config directory
+  file:
+    path: "{{ kubernetes_config_dir }}"
+    state: directory
+
+- name: kubernetes srv directory
+  file:
+    path: "{{ kubernetes_srv_dir }}"
+    state: directory
+
+- name: kubernetes base config file
+  template:
+    src: etc/config.j2
+    dest: "{{ kubernetes_config_dir}}/config"
+
+- name: kubelet working directory
+  file:
+    path: /var/lib/kubelet
+    state: directory
+    owner: kube
+
+- name: kubelet config file
+  template:
+    src: etc/kubelet.j2
+    dest: "{{ kubernetes_config_dir }}/kubelet"
+
+- name: kubelet config manifests directory
+  file:
+    path: /etc/kubernetes/manifests
+    state: directory
+
+- name: kube-proxy config file
+  template:
+    src: etc/proxy.j2
+    dest: "{{ kubernetes_config_dir }}/proxy"
+
+- name: kubernetes service files
+  template:
+    src: "{{ item }}.j2"
+    dest: /etc/systemd/system/{{ item }}
+  with_items:
+    - kubelet.service
+    - kube-proxy.service
+
+- name: kubelet service
+  systemd:
+    name: kubelet
+    state: started
+    enabled: yes
+    daemon_reload: yes
+
+- name: kube-proxy service
+  systemd:
+    name: kube-proxy
+    state: started
+    enabled: yes
+    daemon_reload: yes
+
+# etcd
+  # https://github.com/coreos/etcd/blob/master/Documentation/demo.md
+  # https://github.com/kubernetes/kubernetes/blob/master/cluster/saltbase/salt/etcd/etcd.manifest
+  # set etcd-events manifest?? with different ports 
+  # https://github.com/kubernetes/kubernetes/blob/master/cluster/saltbase/salt/etcd/init.sls
+
+# apiserver
+
+# controller manager
+
+# scheduler
+
+# kubectl to talk to apiserver

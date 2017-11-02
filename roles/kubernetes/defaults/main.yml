@@ -1,0 +1,14 @@
+---
+cluster_name: testcluster
+service_cluster_ip_range: "122.0.0.0/16"
+node_pod_cidr: ""
+kubernetes_config_dir: /etc/kubernetes
+kubernetes_srv_dir: /srv/kubernetes
+hyperkube_image: gcr.io/google-containers/hyperkube:1.8.2
+etcd_version: 3.1.10
+etcd_image: gcr.io/google-containers/etcd:{{ etcd_version }}
+etcd_protocol: http
+etcd_port: 2379
+etcd_server_port: 2380
+etcd_cluster_state: new # only on first member or manager??
+# etc_cluster_state: existing # on backups or any members besides first??
