@@ -22,7 +22,7 @@
     "command": [
               "/bin/sh",
               "-c",
-              "if [ -e /usr/local/bin/migrate-if-needed.sh ]; then /usr/local/bin/migrate-if-needed.sh 1>>/var/log/etcd.log 2>&1; fi; /usr/local/bin/etcd --name etcd-{{ inventory_hostname }} --listen-peer-urls {{ etcd_protocol }}://{{ inventory_hostname }}:{{ etcd_server_port }} --initial-advertise-peer-urls {{ etcd_protocol }}://{{ inventory_hostname }}:{{ etcd_server_port }} --advertise-client-urls http://127.0.0.1:{{ etcd_port }} --listen-client-urls http://127.0.0.1:{{ etcd_port }} --quota-backend-bytes=4294967296 --data-dir /var/etcd/data --initial-cluster-state {{ etcd_cluster_state }} --initial-cluster {{TODO etcd_cluster }} {{TODO etcd_creds }} 1>>/var/log/etcd.log 2>&1"
+              "if [ -e /usr/local/bin/migrate-if-needed.sh ]; then /usr/local/bin/migrate-if-needed.sh 1>>/var/log/etcd.log 2>&1; fi; /usr/local/bin/etcd --name etcd-{{ inventory_hostname }} --listen-peer-urls {{ etcd_protocol }}://{{ ansible_default_ipv4.address }}:{{ etcd_server_port }} --initial-advertise-peer-urls {{ etcd_protocol }}://{{ ansible_default_ipv4.address }}:{{ etcd_server_port }} --advertise-client-urls http://127.0.0.1:{{ etcd_port }} --listen-client-urls http://127.0.0.1:{{ etcd_port }} --quota-backend-bytes=4294967296 --data-dir /var/etcd/data --initial-cluster-state {{ etcd_cluster_state }} --initial-cluster {% for host in groups['kube_masters'] %}{{ etcd_protocol}}://{{hostvars[host].ansible_default_ipv4.address }}:{{ etcd_server_port }}{% if not loop.last %},{% endif %}{% endfor %} {% if kubernetes_encrypt %} {{ etcd_creds }} {% endif %} 1>>/var/log/etcd.log 2>&1"
             ],
     "env": [
       { "name": "TARGET_STORAGE",
@@ -82,7 +82,7 @@
   },
   { "name": "etc",
     "hostPath": {
-        "path": "/srv/kubernetes"}
+        "path": "{{kubernetes_srv_dir}}"
   }
 ]
 }}

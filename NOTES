@@ -1,0 +1,19 @@
+kubectl config set-cluster testcluster --server=http://192.168.137.27 --insecure-skip-tls-verify=true
+
+# only on first member or manager??
+etcd_cluster_state: new
+# etc_cluster_state: existing # on backups or any members besides first??
+
+# etcd
+  # https://github.com/coreos/etcd/blob/master/Documentation/demo.md
+  # https://github.com/kubernetes/kubernetes/blob/master/cluster/saltbase/salt/etcd/etcd.manifest
+  # set etcd-events manifest?? with different ports 
+  # https://github.com/kubernetes/kubernetes/blob/master/cluster/saltbase/salt/etcd/init.sls
+
+I1103 01:09:19.550187       1 serving.go:283] Generated self-signed cert (/var/run/kubernetes/apiserver.crt, /var/run/kubernetes/apiserver.key)
+W1103 01:09:19.550207       1 authentication.go:380] AnonymousAuth is not allowed with the AllowAll authorizer.  Resetting AnonymousAuth to false. You should use a different authorizer
+Error: [--etcd-servers must be specified, no --service-cluster-ip-range specified]
+
+create etcd host dir and files
+    /mnt/master-pd/var/etcd
+    /var/log/etcd.log

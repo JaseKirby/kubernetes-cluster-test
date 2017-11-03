@@ -152,13 +152,17 @@
     enabled: yes
     daemon_reload: yes
 
-# etcd
-  # https://github.com/coreos/etcd/blob/master/Documentation/demo.md
-  # https://github.com/kubernetes/kubernetes/blob/master/cluster/saltbase/salt/etcd/etcd.manifest
-  # set etcd-events manifest?? with different ports 
-  # https://github.com/kubernetes/kubernetes/blob/master/cluster/saltbase/salt/etcd/init.sls
+- name: etcd manifest file
+  template:
+    src: etcd.manifest.j2
+    dest: /etc/kubernetes/manifests/etcd.manifest
 
-# apiserver
+# etcd-events manifest file
+
+- name: apiserver manifest file
+  template:
+    src: kube-apiserver.manifest.j2
+    dest: /etc/kubernetes/manifests/kube-apiserver.manifest
 
 # controller manager
 

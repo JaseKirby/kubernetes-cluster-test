@@ -1,14 +1,18 @@
 ---
 cluster_name: testcluster
 service_cluster_ip_range: "122.0.0.0/16"
-node_pod_cidr: ""
+node_pod_cidr: "122.22.0.0/16"
+kubernetes_version: v1.8.2_coreos.0
+kubernetes_docker_registry: quay.io
 kubernetes_config_dir: /etc/kubernetes
 kubernetes_srv_dir: /srv/kubernetes
-hyperkube_image: gcr.io/google-containers/hyperkube:1.8.2
-etcd_version: 3.1.10
-etcd_image: gcr.io/google-containers/etcd:{{ etcd_version }}
+kubernetes_encrypt: false
+kubernetes_api_protocol: http
+hyperkube_image: "{{ kubernetes_docker_registry }}/coreos/hyperkube:{{ kubernetes_version }}"
+etcd_version: v3.2.9
+etcd_image: "{{ kubernetes_docker_registry }}/coreos/etcd:{{ etcd_version }}"
 etcd_protocol: http
-etcd_port: 2379
-etcd_server_port: 2380
-etcd_cluster_state: new # only on first member or manager??
-# etc_cluster_state: existing # on backups or any members besides first??
+etcd_creds: --peer-trusted-ca-file /srv/kubernetes/etcd-ca.crt --peer-cert-file /srv/kubernetes/etcd-peer.crt --peer-key-file /srv/kubernetes/etcd-peer.key -peer-client-cert-auth
+etcd_port: "2379"
+etcd_server_port: "2380"
+etcd_cluster_state: new

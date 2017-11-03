@@ -9,7 +9,7 @@
     "containers": [
       {
         "name": "kube-apiserver",
-        "image": "gcr.io/google-containers/hyperkube:1.8.2",
+        "image": "{{ hyperkube_image }}",
         "command": [
           "/hyperkube",
           "apiserver"
@@ -54,7 +54,7 @@
       {
         "name": "srvkube",
         "hostPath": {
-          "path": "/srv/kubernetes"
+          "path": "{{ kubernetes_srv_dir }}"
         }
       },
       {
