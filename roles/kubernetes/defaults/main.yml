@@ -1,7 +1,7 @@
 ---
-cluster_name: testcluster
-service_cluster_ip_range: "122.0.0.0/16"
-node_pod_cidr: "122.22.0.0/16"
+cluster_name: cluster.local
+service_cluster_ip_range: "10.0.0.0/16"
+cluster_pod_cidr: "10.22.0.0/16"
 kubernetes_version: v1.8.2_coreos.0
 kubernetes_docker_registry: quay.io
 kubernetes_config_dir: /etc/kubernetes
@@ -10,6 +10,7 @@ kubernetes_encrypt: false
 kubernetes_api_protocol: http
 hyperkube_image: "{{ kubernetes_docker_registry }}/coreos/hyperkube:{{ kubernetes_version }}"
 etcd_version: v3.2.9
+etcd_target_version: 3.2.9
 etcd_image: "{{ kubernetes_docker_registry }}/coreos/etcd:{{ etcd_version }}"
 etcd_protocol: http
 etcd_creds: --peer-trusted-ca-file /srv/kubernetes/etcd-ca.crt --peer-cert-file /srv/kubernetes/etcd-peer.crt --peer-key-file /srv/kubernetes/etcd-peer.key -peer-client-cert-auth

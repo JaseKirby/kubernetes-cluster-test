@@ -20,19 +20,6 @@
   command: swapoff -a
   when: ansible_swaptotal_mb > 0
 
-# - name: NetworkManager-glib package
-#   yum:
-#     name: NetworkManager-glib
-#     state: present
-
-# - name: cbr0 bridge
-#   nmcli:
-#     conn_name: cbr0
-#     ifname: cbr0
-#     type: bridge
-#     ip4: 122.22.0.1/16
-#     state: present
-
 - name: docker binaries
   copy:
     src: /vagrant/private/repo/docker/{{ item }}
@@ -120,15 +107,30 @@
     src: etc/kubelet.j2
     dest: "{{ kubernetes_config_dir }}/kubelet"
 
+- name: kubelet kubeconfig file
+  template:
+    src: kubeconfig.kubelet.j2
+    dest: /var/lib/kubelet/kubeconfig
+
 - name: kubelet config manifests directory
   file:
     path: /etc/kubernetes/manifests
+    state: directory
+
+- name: kube-proxy working directory
+  file:
+    path: /var/lib/kube-proxy
     state: directory
 
 - name: kube-proxy config file
   template:
     src: etc/proxy.j2
     dest: "{{ kubernetes_config_dir }}/proxy"
+
+- name: kube-proxy kubeconfig file
+  template:
+    src: kubeconfig.kube-proxy.j2
+    dest: /var/lib/kube-proxy/kubeconfig
 
 - name: kubernetes service files
   template:
@@ -138,19 +140,19 @@
     - kubelet.service
     - kube-proxy.service
 
-- name: kubelet service
-  systemd:
-    name: kubelet
-    state: started
-    enabled: yes
-    daemon_reload: yes
+# - name: kubelet service
+#   systemd:
+#     name: kubelet
+#     state: started
+#     enabled: yes
+#     daemon_reload: yes
 
-- name: kube-proxy service
-  systemd:
-    name: kube-proxy
-    state: started
-    enabled: yes
-    daemon_reload: yes
+# - name: kube-proxy service
+#   systemd:
+#     name: kube-proxy
+#     state: started
+#     enabled: yes
+#     daemon_reload: yes
 
 - name: etcd manifest file
   template:
@@ -159,13 +161,24 @@
 
 # etcd-events manifest file
 
-- name: apiserver manifest file
-  template:
-    src: kube-apiserver.manifest.j2
-    dest: /etc/kubernetes/manifests/kube-apiserver.manifest
+# - name: apiserver manifest file
+#   template:
+#     src: kube-apiserver.manifest.j2
+#     dest: /etc/kubernetes/manifests/kube-apiserver.manifest
 
-# controller manager
+# - name: scheduler manifest file
+#   template:
+#     src: scheduler.manifest.j2
+#     dest: /etc/kubernetes/manifests/scheduler.manifest
 
-# scheduler
+# - name: controller-manager manifest file
+#   template:
+#     src: controller-manager.manifest.j2
+#     dest: /etc/kubernetes/manifests/controller-manager.manifest
+
+# - name: weave manifest file
+#   template:
+#     src: weave.manifest.j2
+#     dest: /etc/kubernetes/manifests/weave.manifest
 
 # kubectl to talk to apiserver

@@ -2,34 +2,19 @@
   "kind": "Pod",
   "apiVersion": "v1",
   "metadata": {
-    "name": "kube-apiserver"
+    "name": "kube-controller-manager"
   },
   "spec": {
     "hostNetwork": true,
     "containers": [
       {
-        "name": "kube-apiserver",
+        "name": "kube-controller-manager",
         "image": "{{ hyperkube_image }}",
         "command": [
           "/hyperkube",
-          "apiserver",
-          "--insecure-bind-address={{ ansible_default_ipv4.address }}",
-          "--advertise-address={{ ansible_default_ipv4.address }}",
-          "--token-auth-file=/dev/null",
-          "--service-cluster-ip-range={{ service_cluster_ip_range }}",
-          "--etcd-servers={% for host in groups['kube_masters'] %}{{ etcd_protocol}}://{{hostvars[host].ansible_default_ipv4.address }}:{{ etcd_server_port }}{% if not loop.last %},{% endif %}{% endfor %}"
-        ],
-        "ports": [
-          {
-            "name": "https",
-            "hostPort": 443,
-            "containerPort": 443
-          },
-          {
-            "name": "local",
-            "hostPort": 8080,
-            "containerPort": 8080
-          }
+          "controller-manager",
+          "--master=127.0.0.1:8080",
+          "--cluster-cidr={{ cluster_pod_cidr }}"
         ],
         "volumeMounts": [
           {
@@ -47,7 +32,7 @@
           "httpGet": {
             "scheme": "HTTP",
             "host": "127.0.0.1",
-            "port": 8080,
+            "port": 10252,
             "path": "/healthz"
           },
           "initialDelaySeconds": 15,
@@ -59,7 +44,7 @@
       {
         "name": "srvkube",
         "hostPath": {
-          "path": "{{ kubernetes_srv_dir }}"
+          "path": "/srv/kubernetes"
         }
       },
       {

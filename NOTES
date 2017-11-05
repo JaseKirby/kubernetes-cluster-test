@@ -17,3 +17,5 @@ Error: [--etcd-servers must be specified, no --service-cluster-ip-range specifie
 create etcd host dir and files
     /mnt/master-pd/var/etcd
     /var/log/etcd.log
+
+consider moving etcd to host as api server is failing
