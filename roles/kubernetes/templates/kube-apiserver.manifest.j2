@@ -1,73 +1,49 @@
-{
-  "kind": "Pod",
-  "apiVersion": "v1",
-  "metadata": {
-    "name": "kube-apiserver"
-  },
-  "spec": {
-    "hostNetwork": true,
-    "containers": [
-      {
-        "name": "kube-apiserver",
-        "image": "{{ hyperkube_image }}",
-        "command": [
-          "/hyperkube",
-          "apiserver",
-          "--insecure-bind-address={{ ansible_default_ipv4.address }}",
-          "--advertise-address={{ ansible_default_ipv4.address }}",
-          "--token-auth-file=/dev/null",
-          "--service-cluster-ip-range={{ service_cluster_ip_range }}",
-          "--etcd-servers={% for host in groups['kube_masters'] %}{{ etcd_protocol}}://{{hostvars[host].ansible_default_ipv4.address }}:{{ etcd_server_port }}{% if not loop.last %},{% endif %}{% endfor %}"
-        ],
-        "ports": [
-          {
-            "name": "https",
-            "hostPort": 443,
-            "containerPort": 443
-          },
-          {
-            "name": "local",
-            "hostPort": 8080,
-            "containerPort": 8080
-          }
-        ],
-        "volumeMounts": [
-          {
-            "name": "srvkube",
-            "mountPath": "/srv/kubernetes",
-            "readOnly": true
-          },
-          {
-            "name": "etcssl",
-            "mountPath": "/etc/ssl",
-            "readOnly": true
-          }
-        ],
-        "livenessProbe": {
-          "httpGet": {
-            "scheme": "HTTP",
-            "host": "127.0.0.1",
-            "port": 8080,
-            "path": "/healthz"
-          },
-          "initialDelaySeconds": 15,
-          "timeoutSeconds": 15
-        }
-      }
-    ],
-    "volumes": [
-      {
-        "name": "srvkube",
-        "hostPath": {
-          "path": "{{ kubernetes_srv_dir }}"
-        }
-      },
-      {
-        "name": "etcssl",
-        "hostPath": {
-          "path": "/etc/ssl"
-        }
-      }
-    ]
-  }
-}
+apiVersion: v1
+kind: Pod
+metadata:
+  name: kube-apiserver
+spec:
+  hostNetwork: true
+  containers:
+  - name: kube-apiserver
+    image: {{ hyperkube_image }}
+    command:
+    - /hyperkube
+    - apiserver
+    - --insecure-bind-address=127.0.0.1
+    - --advertise-address={{ ansible_default_ipv4.address }}
+    - --token-auth-file=/dev/null
+    - --etcd-servers=http://127.0.0.1:2379 # TODO loop here for all master etcd cluster, make sure etcd manifest file does not bind to 127
+    - --service-cluster-ip-range=10.0.0.0/16
+    - --allow-privileged=true
+    # - 1>>/var/log/kube-apiserver.log 2>&1 does not work directing logs to file
+    ports:
+    - containerPort: 443
+      hostPort: 443
+      name: https
+    - containerPort: 7080
+      hostPort: 7080
+      name: http
+    - containerPort: 8080
+      hostPort: 8080
+      name: local
+    volumeMounts:
+    - mountPath: /srv/kubernetes
+      name: srvkube
+      readOnly: true
+    # - mountPath: /var/log/kube-apiserver.log
+    #   name: logfile
+    - mountPath: /etc/ssl
+      name: etcssl
+      readOnly: true
+  volumes:
+  - hostPath:
+      path: /srv/kubernetes
+    name: srvkube
+  # - hostPath:
+  #     path: /var/log/kube-apiserver.log
+  #   name: logfile
+  - hostPath:
+      path: /etc/ssl
+    name: etcssl
+  

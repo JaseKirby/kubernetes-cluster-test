@@ -1,21 +1,20 @@
-kubectl config set-cluster testcluster --server=http://192.168.137.27 --insecure-skip-tls-verify=true
+kubectl config set-cluster cluster.local --server=http://127.0.0.1 --insecure-skip-tls-verify=true
 
-# only on first member or manager??
-etcd_cluster_state: new
-# etc_cluster_state: existing # on backups or any members besides first??
+single node cluster working with private 127.0.0.1 bind adresses to http port 8080 api server link
+move to secure ports and protocols next
 
-# etcd
-  # https://github.com/coreos/etcd/blob/master/Documentation/demo.md
-  # https://github.com/kubernetes/kubernetes/blob/master/cluster/saltbase/salt/etcd/etcd.manifest
-  # set etcd-events manifest?? with different ports 
-  # https://github.com/kubernetes/kubernetes/blob/master/cluster/saltbase/salt/etcd/init.sls
+kube-proxy kubeconfig is not being used systemd service file points it to 127.0.0.1
 
-I1103 01:09:19.550187       1 serving.go:283] Generated self-signed cert (/var/run/kubernetes/apiserver.crt, /var/run/kubernetes/apiserver.key)
-W1103 01:09:19.550207       1 authentication.go:380] AnonymousAuth is not allowed with the AllowAll authorizer.  Resetting AnonymousAuth to false. You should use a different authorizer
-Error: [--etcd-servers must be specified, no --service-cluster-ip-range specified]
+implement the health checks for core manifests some were causing the pod to fail with apiserver being one of those
 
-create etcd host dir and files
-    /mnt/master-pd/var/etcd
-    /var/log/etcd.log
+still need to look into etcd-events pod manifest
+https://github.com/kubernetes/kubernetes/blob/master/cluster/saltbase/salt/etcd/etcd.manifest
 
-consider moving etcd to host as api server is failing
+host level log file mounts for core services manifests??
+  commented them out because they were breaking pod deployment
+  is docker logs insufficient?
+
+weave issues (had to first set priveleged containers=true in kubelet and apiserver)
+[root@localhost repo]# kubectl get pods -n kube-system -l name=weave-net -o wide
+NAME              READY     STATUS    RESTARTS   AGE       IP        NODE
+weave-net-pssxp   0/2       Pending   0          18m       <none>    127.0.0.1

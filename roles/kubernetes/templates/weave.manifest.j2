@@ -1,3 +1,4 @@
+# from https://github.com/weaveworks/weave/releases
 apiVersion: v1
 kind: List
 items:
@@ -8,45 +9,6 @@ items:
       labels:
         name: weave-net
       namespace: kube-system
-  - apiVersion: rbac.authorization.k8s.io/v1beta1
-    kind: ClusterRole
-    metadata:
-      name: weave-net
-      labels:
-        name: weave-net
-    rules:
-      - apiGroups:
-          - ''
-        resources:
-          - pods
-          - namespaces
-          - nodes
-        verbs:
-          - get
-          - list
-          - watch
-      - apiGroups:
-          - extensions
-        resources:
-          - networkpolicies
-        verbs:
-          - get
-          - list
-          - watch
-  - apiVersion: rbac.authorization.k8s.io/v1beta1
-    kind: ClusterRoleBinding
-    metadata:
-      name: weave-net
-      labels:
-        name: weave-net
-    roleRef:
-      kind: ClusterRole
-      name: weave-net
-      apiGroup: rbac.authorization.k8s.io
-    subjects:
-      - kind: ServiceAccount
-        name: weave-net
-        namespace: kube-system
   - apiVersion: extensions/v1beta1
     kind: DaemonSet
     metadata:
@@ -57,6 +19,9 @@ items:
     spec:
       template:
         metadata:
+          annotations:
+            scheduler.alpha.kubernetes.io/tolerations: >-
+              [{"key":"dedicated","operator":"Equal","value":"master","effect":"NoSchedule"}]
           labels:
             name: weave-net
         spec:
@@ -114,9 +79,6 @@ items:
           securityContext:
             seLinuxOptions: {}
           serviceAccountName: weave-net
-          tolerations:
-            - effect: NoSchedule
-              operator: Exists
           volumes:
             - name: weavedb
               hostPath:
@@ -136,5 +98,3 @@ items:
             - name: lib-modules
               hostPath:
                 path: /lib/modules
-      updateStrategy:
-        type: RollingUpdate
