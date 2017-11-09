@@ -13,8 +13,8 @@ Vagrant.configure("2") do |config|
         ansible.playbook = "provision.yml"
         ansible.groups = {
             "all" => ["default"],
-            "kube_masters" => ["default"],
-            "kube_nodes" => ["default"]
+            "kube-masters" => ["default"],
+            "kube-nodes" => ["default"]
         }
     end
   end

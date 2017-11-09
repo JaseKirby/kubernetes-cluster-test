@@ -17,7 +17,7 @@
           "--advertise-address={{ ansible_default_ipv4.address }}",
           "--token-auth-file=/dev/null",
           "--service-cluster-ip-range={{ service_cluster_ip_range }}",
-          "--etcd-servers={% for host in groups['kube_masters'] %}{{ etcd_protocol}}://{{hostvars[host].ansible_default_ipv4.address }}:{{ etcd_server_port }}{% if not loop.last %},{% endif %}{% endfor %}"
+          "--etcd-servers={% for host in groups['kube-masters'] %}{{ etcd_protocol}}://{{hostvars[host].ansible_default_ipv4.address }}:{{ etcd_server_port }}{% if not loop.last %},{% endif %}{% endfor %}"
         ],
         "ports": [
           {

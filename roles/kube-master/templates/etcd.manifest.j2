@@ -25,7 +25,7 @@ spec:
     - --data-dir
     - /var/etcd/data
     - --initial-cluster
-    - {% for host in groups['kube_masters'] %}{{inventory_hostname}}={{ etcd_protocol}}://{{hostvars[host].ansible_default_ipv4.address }}:{{ etcd_server_port }}{% if not loop.last %},{% endif %}{% endfor %}
+    - {% for host in groups['kube-masters'] %}{{inventory_hostname}}={{ etcd_protocol}}://{{hostvars[host].ansible_default_ipv4.address }}:{{ etcd_server_port }}{% if not loop.last %},{% endif %}{% endfor %}
 
     - --initial-cluster-state
     - new

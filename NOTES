@@ -18,3 +18,4 @@ weave issues (had to first set priveleged containers=true in kubelet and apiserv
 [root@localhost repo]# kubectl get pods -n kube-system -l name=weave-net -o wide
 NAME              READY     STATUS    RESTARTS   AGE       IP        NODE
 weave-net-pssxp   0/2       Pending   0          18m       <none>    127.0.0.1
+https://github.com/weaveworks/weave/issues/2826 (may be relevant)

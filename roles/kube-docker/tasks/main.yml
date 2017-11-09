@@ -1,0 +1,46 @@
+- name: docker binaries
+  copy:
+    src: /vagrant/private/repo/docker/{{ item }}
+    dest: /usr/bin/{{ item }}
+    mode: 744
+  with_items:
+    - docker
+    - docker-containerd
+    - docker-containerd-ctr
+    - docker-containerd-shim
+    - docker-init
+    - docker-proxy
+    - docker-runc
+    - dockerd
+
+- name: docker config directory
+  file:
+    path: /etc/docker
+    state: directory
+
+- name: docker daemon.json config file
+  template:
+    src: etc/docker/daemon.json.j2
+    dest: /etc/docker/daemon.json
+
+- name: docker group
+  group:
+    name: docker
+    state: present
+
+- name: docker service file
+  template:
+    src: etc/systemd/docker.service.j2
+    dest: /etc/systemd/system/docker.service
+
+- name: docker socket file
+  template:
+    src: etc/systemd/docker.socket.j2
+    dest: /etc/systemd/system/docker.socket
+
+- name: docker service
+  systemd:
+    name: docker
+    state: started
+    enabled: yes
+    daemon_reload: yes
