@@ -3,12 +3,27 @@
   yum:
     name: net-tools
     state: present
-    
-- name: enable ipv4 forwarding sysctl
+
+- name: sysctl enable ipv4 forwarding and route all traffic through iptables 
   sysctl:
     name: net.ipv4.ip_forward
     value: 1
     state: present
+    reload: yes
+
+- name: sysctl enable ipv4 forwarding and route all traffic through iptables 
+  sysctl:
+    name: net.bridge.bridge-nf-call-iptables
+    value: 1
+    state: present
+    reload: yes
+
+# - name: sysctl enable ipv4 forwarding and route all traffic through iptables 
+#   sysctl:
+#     name: net.bridge.bridge-nf-call-ip6tables
+#     value: 1
+#     state: present
+#     reload: yes
 
 - name: remove swapfile from /etc/fstab
   mount:
@@ -32,117 +47,63 @@
     mode: 744
   with_items:
     - kubelet
-    - kube-proxy
     - kubectl
 
 - name: kubernetes kube user
   user:
     name: kube
 
-- name: kubernetes config directory
+- name: kubernetes directories
   file:
     path: "{{ kubernetes_config_dir }}"
     state: directory
-
-- name: kubernetes srv directory
-  file:
-    path: "{{ kubernetes_srv_dir }}"
-    state: directory
-
-- name: kubernetes base config file
-  template:
-    src: etc/config.j2
-    dest: "{{ kubernetes_config_dir}}/config"
-
-- name: kubelet working directory
-  file:
-    path: /var/lib/kubelet
-    state: directory
-    owner: kube
-
-- name: kubelet config file
-  template:
-    src: etc/kubelet.j2
-    dest: "{{ kubernetes_config_dir }}/kubelet"
-
-- name: kubelet kubeconfig file
-  template:
-    src: kubeconfig.kubelet.j2
-    dest: /var/lib/kubelet/kubeconfig
-
-- name: kubelet config manifests directory
-  file:
-    path: /etc/kubernetes/manifests
-    state: directory
-
-- name: kube-proxy working directory
-  file:
-    path: /var/lib/kube-proxy
-    state: directory
-
-- name: kube-proxy config file
-  template:
-    src: etc/proxy.j2
-    dest: "{{ kubernetes_config_dir }}/proxy"
-
-- name: kube-proxy kubeconfig file
-  template:
-    src: kubeconfig.kube-proxy.j2
-    dest: /var/lib/kube-proxy/kubeconfig
-
-- name: kubernetes service files
-  template:
-    src: "{{ item }}.j2"
-    dest: /etc/systemd/system/{{ item }}
   with_items:
-    - kubelet.service
-    - kube-proxy.service
+    - "{{ kubernetes_config_dir }}/manifests"
+    - "{{ kubernetes_config_dir }}/pki"
+    - "{{ kubernetes_srv_dir }}"
+    - /var/lib/kubelet/pki
+    - /etc/systemd/system/kubelet.service.d
+    - /etc/cni/net.d
+    - /opt/cni/bin
 
-# - name: kubelet service
-#   systemd:
-#     name: kubelet
-#     state: started
-#     enabled: yes
-#     daemon_reload: yes
-
-# - name: kube-proxy service
-#   systemd:
-#     name: kube-proxy
-#     state: started
-#     enabled: yes
-#     daemon_reload: yes
-
-- name: etcd manifest file
+- name: kubelet systemd service file
   template:
-    src: etcd.manifest.j2
-    dest: /etc/kubernetes/manifests/etcd.manifest
+    src: systemd/kubelet.service.j2
+    dest: /etc/systemd/system/kubelet.service
 
-# etcd-events manifest file
-
-- name: apiserver manifest file
+- name: kubelet systemd environment file
   template:
-    src: kube-apiserver.manifest.j2
-    dest: /etc/kubernetes/manifests/kube-apiserver.manifest
+    src: systemd/kubelet.conf.j2
+    dest: /etc/systemd/system/kubelet.service/kubelet.conf
 
-- name: scheduler manifest file
+- name: kubeconfig files
   template:
-    src: kube-scheduler.manifest.j2
-    dest: /etc/kubernetes/manifests/kube-scheduler.manifest
+    src: etc/{{ item }}.conf.j2
+    dest: /etc/kubernetes/{{ item }}.conf
+  with_items:
+    - admin
+    - controller-manager
+    - kubelet
+    - scheduler
 
-- name: controller-manager manifest file
-  template:
-    src: kube-controller-manager.manifest.j2
-    dest: /etc/kubernetes/manifests/kube-controller-manager.manifest
+# kube-proxy
 
-# start kube-proxy with apiserver now up
+# - name: cni 0.6.0 binaries
+#   copy:
+#     src: private/repo/cni-0.6.0/{{ item }}
+#     dest: /opt/cni/bin/{{ item }}
+#   with_items:
+#     - bridge
+#     - dhcp
+#     - flannel
+#     - host-local
+#     - ipvlan
+#     - loopback
+#     - macvlan
+#     - portmap
+#     - ptp
+#     - sample
+#     - tuning
+#     - vlan
 
-# kubectl to talk to apiserver
-# set auto completion for kubectl
-# set ~/.kube/config kubeconfig file for root user
-
-# kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
-# kubectl -n kube-system delete -f weave.manifest
-- name: weave manifest file
-  template:
-    src: weave.manifest.j2
-    dest: /root/weave.manifest
+# kubelet service

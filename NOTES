@@ -1,21 +1,5 @@
-kubectl config set-cluster cluster.local --server=http://127.0.0.1 --insecure-skip-tls-verify=true
-
-single node cluster working with private 127.0.0.1 bind adresses to http port 8080 api server link
-move to secure ports and protocols next
-
-kube-proxy kubeconfig is not being used systemd service file points it to 127.0.0.1
-
-implement the health checks for core manifests some were causing the pod to fail with apiserver being one of those
+kubectl config set-cluster cluster.local --server=http://127.0.0.1:8080 --insecure-skip-tls-verify=true
 
 still need to look into etcd-events pod manifest
 https://github.com/kubernetes/kubernetes/blob/master/cluster/saltbase/salt/etcd/etcd.manifest
 
-host level log file mounts for core services manifests??
-  commented them out because they were breaking pod deployment
-  is docker logs insufficient?
-
-weave issues (had to first set priveleged containers=true in kubelet and apiserver)
-[root@localhost repo]# kubectl get pods -n kube-system -l name=weave-net -o wide
-NAME              READY     STATUS    RESTARTS   AGE       IP        NODE
-weave-net-pssxp   0/2       Pending   0          18m       <none>    127.0.0.1
-https://github.com/weaveworks/weave/issues/2826 (may be relevant)
