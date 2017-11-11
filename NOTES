@@ -3,3 +3,9 @@ kubectl config set-cluster cluster.local --server=http://127.0.0.1:8080 --insecu
 still need to look into etcd-events pod manifest
 https://github.com/kubernetes/kubernetes/blob/master/cluster/saltbase/salt/etcd/etcd.manifest
 
+all certs
+
+[root@localhost pki]# ls
+apiserver.crt  apiserver.key  apiserver-kubelet-client.crt  apiserver-kubelet-client.key  ca.crt  ca.key  front-proxy-ca.crt  front-proxy-ca.key  front-proxy-client.crt  front-proxy-client.key  sa.key  sa.pub
+[root@localhost pki]# pwd
+/etc/kubernetes/pki

@@ -18,13 +18,6 @@
     state: present
     reload: yes
 
-# - name: sysctl enable ipv4 forwarding and route all traffic through iptables 
-#   sysctl:
-#     name: net.bridge.bridge-nf-call-ip6tables
-#     value: 1
-#     state: present
-#     reload: yes
-
 - name: remove swapfile from /etc/fstab
   mount:
     name: swap
@@ -47,6 +40,7 @@
     mode: 744
   with_items:
     - kubelet
+    - kube-proxy
     - kubectl
 
 - name: kubernetes kube user
@@ -55,14 +49,15 @@
 
 - name: kubernetes directories
   file:
-    path: "{{ kubernetes_config_dir }}"
+    path: "{{ item }}"
     state: directory
   with_items:
-    - "{{ kubernetes_config_dir }}/manifests"
-    - "{{ kubernetes_config_dir }}/pki"
-    - "{{ kubernetes_srv_dir }}"
+    - "{{ kube_config_dir }}/manifests"
+    - "{{ kube_config_dir }}/pki"
+    - "{{ kube_srv_dir }}"
     - /var/lib/kubelet/pki
     - /etc/systemd/system/kubelet.service.d
+    - /etc/systemd/system/kube-proxy.service.d
     - /etc/cni/net.d
     - /opt/cni/bin
 
@@ -71,39 +66,73 @@
     src: systemd/kubelet.service.j2
     dest: /etc/systemd/system/kubelet.service
 
+- name: kubelet systemd conf directory
+  file:
+    path: /etc/systemd/system/kubelet.service.d
+    state: directory
+
 - name: kubelet systemd environment file
   template:
     src: systemd/kubelet.conf.j2
-    dest: /etc/systemd/system/kubelet.service/kubelet.conf
+    dest: /etc/systemd/system/kubelet.service.d/kubelet.conf
+
+- name: kube-proxy systemd service file
+  template:
+    src: systemd/kube-proxy.service.j2
+    dest: /etc/systemd/system/kube-proxy.service
+
+- name: kube-proxy systemd conf directory
+  file:
+    path: /etc/systemd/system/kube-proxy.service.d
+    state: directory
+
+- name: kube-proxy systemd environment file
+  template:
+    src: systemd/kube-proxy.conf.j2
+    dest: /etc/systemd/system/kube-proxy.service.d/kube-proxy.conf
 
 - name: kubeconfig files
   template:
-    src: etc/{{ item }}.conf.j2
-    dest: /etc/kubernetes/{{ item }}.conf
+    src: etc/{{ item }}.config.j2
+    dest: /etc/kubernetes/{{ item }}.config
   with_items:
     - admin
     - controller-manager
     - kubelet
     - scheduler
 
-# kube-proxy
+- name: cni 0.5.2 binaries
+  copy:
+    src: private/repo/cni/{{ item }}
+    dest: /opt/cni/bin/{{ item }}
+  with_items:
+    - bridge
+    - cnitool
+    - dhcp
+    - flannel
+    - host-local
+    - ipvlan
+    - loopback
+    - macvlan
+    - noop
+    - ptp
+    - tuning
 
-# - name: cni 0.6.0 binaries
-#   copy:
-#     src: private/repo/cni-0.6.0/{{ item }}
-#     dest: /opt/cni/bin/{{ item }}
-#   with_items:
-#     - bridge
-#     - dhcp
-#     - flannel
-#     - host-local
-#     - ipvlan
-#     - loopback
-#     - macvlan
-#     - portmap
-#     - ptp
-#     - sample
-#     - tuning
-#     - vlan
+- name: kubelet manifests
+  template:
+    src: etc/manifests/{{ item }}.yml
+    dest: "{{ kube_config_dir }}/manifests/{{ item }}.yml"
+  with_items:
+    - etcd
+    - kube-apiserver
+    - kube-controller-manager
+    - kube-scheduler
+
+- name: flannel networking config file
+  template:
+    src: etc/kube-flannel.yml
+    dest: "{{ kube_config_dir }}/kube-flannel.yml"
 
 # kubelet service
+
+# kube-proxy

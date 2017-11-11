@@ -1,18 +1,17 @@
 ---
-cluster_name: cluster.local
-service_cluster_ip_range: "10.0.0.0/16"
-cluster_pod_cidr: "10.22.0.0/16"
-kubernetes_version: 1.8.2
-kubernetes_docker_registry: gcr.io
-kubernetes_config_dir: /etc/kubernetes
-kubernetes_srv_dir: /srv/kubernetes
-kubernetes_encrypt: false
-kubernetes_api_protocol: http
-hyperkube_image: "{{ kubernetes_docker_registry }}/google-containers/hyperkube:v{{ kubernetes_version }}"
-etcd_version: 3.1.10
-etcd_image: "{{ kubernetes_docker_registry }}/google-containers/etcd:{{ etcd_version }}"
-etcd_protocol: http
-etcd_creds: --peer-trusted-ca-file /srv/kubernetes/etcd-ca.crt --peer-cert-file /srv/kubernetes/etcd-peer.crt --peer-key-file /srv/kubernetes/etcd-peer.key -peer-client-cert-auth
-etcd_port: "2379"
-etcd_server_port: "2380"
-etcd_cluster_state: new
+kube_cluster_name: cluster.local
+kube_service_cluster_ip_range: "10.0.0.0/16"
+kube_cluster_pod_cidr: "10.22.0.0/16"
+kube_version: 1.8.2
+kube_docker_registry: gcr.io
+kube_config_dir: /etc/kubernetes
+kube_srv_dir: /srv/kubernetes
+kube_encrypt: false
+kube_api_protocol: http
+kube_etcd_version: 3.0.17
+kube_etcd_image: "{{ kube_docker_registry }}/google-containers/etcd:{{ kube_etcd_version }}"
+kube_etcd_protocol: http
+kube_etcd_creds: --peer-trusted-ca-file /srv/kubernetes/etcd-ca.crt --peer-cert-file /srv/kubernetes/etcd-peer.crt --peer-key-file /srv/kubernetes/etcd-peer.key -peer-client-cert-auth
+kube_etcd_port: "2379"
+kube_etcd_server_port: "2380"
+kube_etcd_cluster_state: new

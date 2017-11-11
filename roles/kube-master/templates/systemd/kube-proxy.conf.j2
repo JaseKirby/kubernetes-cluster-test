@@ -1,0 +1,5 @@
+[Service]
+Environment="KUBE_PROXY_KUBECONFIG=--kubeconfig=/etc/kubernetes/kubelet.config"
+Environment="KUBE_MASTER=--master=http://127.0.0.1:8080"
+ExecStart=
+ExecStart=/usr/bin/kube-proxy $KUBE_MASTER

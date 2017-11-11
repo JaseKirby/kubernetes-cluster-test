@@ -13,30 +13,30 @@ spec:
   containers:
   - command:
     - kube-apiserver
-    - --tls-private-key-file=/etc/kubernetes/pki/apiserver.key
-    - --proxy-client-cert-file=/etc/kubernetes/pki/front-proxy-client.crt
-    - --proxy-client-key-file=/etc/kubernetes/pki/front-proxy-client.key
+    # - --tls-private-key-file=/etc/kubernetes/pki/apiserver.key
+    # - --proxy-client-cert-file=/etc/kubernetes/pki/front-proxy-client.crt
+    # - --proxy-client-key-file=/etc/kubernetes/pki/front-proxy-client.key
     - --requestheader-group-headers=X-Remote-Group
     - --requestheader-allowed-names=front-proxy-client
     - --requestheader-username-headers=X-Remote-User
-    - --service-account-key-file=/etc/kubernetes/pki/sa.pub
-    - --kubelet-client-key=/etc/kubernetes/pki/apiserver-kubelet-client.key
-    - --insecure-port=0
+    # - --service-account-key-file=/etc/kubernetes/pki/sa.pub
+    # - --kubelet-client-key=/etc/kubernetes/pki/apiserver-kubelet-client.key
+    - --insecure-port=8080
     - --allow-privileged=true
-    - --tls-cert-file=/etc/kubernetes/pki/apiserver.crt
-    - --kubelet-client-certificate=/etc/kubernetes/pki/apiserver-kubelet-client.crt
+    # - --tls-cert-file=/etc/kubernetes/pki/apiserver.crt
+    # - --kubelet-client-certificate=/etc/kubernetes/pki/apiserver-kubelet-client.crt
     - --secure-port=6443
     - --requestheader-extra-headers-prefix=X-Remote-Extra-
-    - --client-ca-file=/etc/kubernetes/pki/ca.crt
-    - --advertise-address=192.168.137.97
+    # - --client-ca-file=/etc/kubernetes/pki/ca.crt
+    - --advertise-address={{ ansible_default_ipv4.address }}
     - --service-cluster-ip-range=10.96.0.0/12
-    - --requestheader-client-ca-file=/etc/kubernetes/pki/front-proxy-ca.crt
+    # - --requestheader-client-ca-file=/etc/kubernetes/pki/front-proxy-ca.crt
     - --enable-bootstrap-token-auth=true
     - --admission-control=Initializers,NamespaceLifecycle,LimitRanger,ServiceAccount,PersistentVolumeLabel,DefaultStorageClass,DefaultTolerationSeconds,NodeRestriction,ResourceQuota
     - --kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname
     - --authorization-mode=Node,RBAC
     - --etcd-servers=http://127.0.0.1:2379
-    image: gcr.io/google_containers/kube-apiserver-amd64:v1.8.3
+    image: gcr.io/google_containers/kube-apiserver-amd64:v1.8.2
     livenessProbe:
       failureThreshold: 8
       httpGet:

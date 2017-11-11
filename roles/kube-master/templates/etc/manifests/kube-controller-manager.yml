@@ -13,16 +13,17 @@ spec:
   containers:
   - command:
     - kube-controller-manager
-    - --root-ca-file=/etc/kubernetes/pki/ca.crt
-    - --cluster-signing-key-file=/etc/kubernetes/pki/ca.key
+    # - --root-ca-file=/etc/kubernetes/pki/ca.crt
+    # - --cluster-signing-key-file=/etc/kubernetes/pki/ca.key
     - --leader-elect=true
     - --controllers=*,bootstrapsigner,tokencleaner
-    - --kubeconfig=/etc/kubernetes/controller-manager.conf
-    - --service-account-private-key-file=/etc/kubernetes/pki/sa.key
-    - --cluster-signing-cert-file=/etc/kubernetes/pki/ca.crt
+    - --kubeconfig=/etc/kubernetes/controller-manager.config
+    # - --service-account-private-key-file=/etc/kubernetes/pki/sa.key
+    # - --cluster-signing-cert-file=/etc/kubernetes/pki/ca.crt
     - --address=127.0.0.1
-    - --use-service-account-credentials=true
-    image: gcr.io/google_containers/kube-controller-manager-amd64:v1.8.3
+    # - --use-service-account-credentials=true
+    # - --cluster-cidr=10.244.0.0/16 TODO I added this one trying to get flannel to work 
+    image: gcr.io/google_containers/kube-controller-manager-amd64:v1.8.2
     livenessProbe:
       failureThreshold: 8
       httpGet:
@@ -43,7 +44,7 @@ spec:
     - mountPath: /etc/ssl/certs
       name: ca-certs
       readOnly: true
-    - mountPath: /etc/kubernetes/controller-manager.conf
+    - mountPath: /etc/kubernetes/controller-manager.config
       name: kubeconfig
       readOnly: true
     - mountPath: /usr/libexec/kubernetes/kubelet-plugins/volume/exec
@@ -62,7 +63,7 @@ spec:
       type: DirectoryOrCreate
     name: ca-certs
   - hostPath:
-      path: /etc/kubernetes/controller-manager.conf
+      path: /etc/kubernetes/controller-manager.config
       type: FileOrCreate
     name: kubeconfig
   - hostPath:
