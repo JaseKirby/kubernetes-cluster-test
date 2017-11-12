@@ -62,7 +62,7 @@ data:
     }
   net-conf.json: |
     {
-      "Network": "10.244.0.0/16",
+      "Network": "{{ kube_cluster_pod_cidr }}",
       "Backend": {
         "Type": "vxlan"
       }

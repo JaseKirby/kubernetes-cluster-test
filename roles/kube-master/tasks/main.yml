@@ -1,15 +1,15 @@
 ---
-- name: net-tools
-  yum:
-    name: net-tools
-    state: present
-
 - name: sysctl enable ipv4 forwarding and route all traffic through iptables 
   sysctl:
     name: net.ipv4.ip_forward
     value: 1
     state: present
     reload: yes
+
+- name: net-tools
+  yum:
+    name: net-tools
+    state: present
 
 - name: sysctl enable ipv4 forwarding and route all traffic through iptables 
   sysctl:
@@ -128,10 +128,24 @@
     - kube-controller-manager
     - kube-scheduler
 
+- name: certificates
+  copy:
+    src: private/cert/{{ item }}
+    dest: "{{ kube_config_dir }}/pki/{{ item }}"
+  with_items:
+    - apiserver.key
+    - apiserver.crt
+    - ca.crt
+    - ca.key
+    - sa.key
+    - sa.pub
+
 - name: flannel networking config file
   template:
     src: etc/kube-flannel.yml
     dest: "{{ kube_config_dir }}/kube-flannel.yml"
+
+# kube-dns or OpenDNS for service discovery
 
 # kubelet service
 

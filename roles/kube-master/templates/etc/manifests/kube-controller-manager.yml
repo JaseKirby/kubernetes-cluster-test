@@ -13,16 +13,17 @@ spec:
   containers:
   - command:
     - kube-controller-manager
-    # - --root-ca-file=/etc/kubernetes/pki/ca.crt
-    # - --cluster-signing-key-file=/etc/kubernetes/pki/ca.key
+    - --root-ca-file=/etc/kubernetes/pki/ca.crt
+    - --cluster-signing-key-file=/etc/kubernetes/pki/ca.key
     - --leader-elect=true
     - --controllers=*,bootstrapsigner,tokencleaner
     - --kubeconfig=/etc/kubernetes/controller-manager.config
-    # - --service-account-private-key-file=/etc/kubernetes/pki/sa.key
-    # - --cluster-signing-cert-file=/etc/kubernetes/pki/ca.crt
+    - --service-account-private-key-file=/etc/kubernetes/pki/sa.key
+    - --cluster-signing-cert-file=/etc/kubernetes/pki/ca.crt
     - --address=127.0.0.1
-    # - --use-service-account-credentials=true
-    # - --cluster-cidr=10.244.0.0/16 TODO I added this one trying to get flannel to work 
+    - --use-service-account-credentials=true
+    - --allocate-node-cidrs=true
+    - --cluster-cidr={{ kube_cluster_pod_cidr }}
     image: gcr.io/google_containers/kube-controller-manager-amd64:v1.8.2
     livenessProbe:
       failureThreshold: 8
