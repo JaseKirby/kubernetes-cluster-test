@@ -2,7 +2,7 @@
   copy:
     src: /vagrant/private/repo/docker/{{ item }}
     dest: /usr/bin/{{ item }}
-    mode: 744
+    mode: 0755
   with_items:
     - docker
     - docker-containerd
