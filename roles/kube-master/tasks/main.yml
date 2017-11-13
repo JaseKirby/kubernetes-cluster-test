@@ -141,17 +141,18 @@
     - sa.key
     - sa.pub
 
+# wait for core service ports to come up (apiserver, controller-manager, scheduler, etc.)
+
 - name: flannel networking config file
   template:
     src: etc/kube-flannel.yml
     dest: "{{ kube_config_dir }}/kube-flannel.yml"
 
-# wait for core service ports to come up (apiserver, controller-manager, scheduler, etc.)
-
 # use ansible kube module to put kube-flannel in place
+# or use weave networking file
 
 # kube-dns or OpenDNS for service discovery
 
 # kubelet service
 
-# kube-proxy
+# kube-proxy service
