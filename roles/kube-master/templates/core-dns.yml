@@ -1,4 +1,4 @@
-TODO put IPs in place
+---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -51,7 +51,7 @@ data:
         errors
         log stdout
         health
-        kubernetes CLUSTER_DOMAIN SERVICE_CIDR
+        kubernetes {{ kube_cluster_name }} {{ kube_service_cluster_ip_range }}
         proxy . /etc/resolv.conf
         cache 30
     }
@@ -129,7 +129,7 @@ metadata:
 spec:
   selector:
     k8s-app: coredns
-  clusterIP: CLUSTER_DNS_IP
+  clusterIP: {{ kube_service_cluster_ip }}
   ports:
   - name: dns
     port: 53

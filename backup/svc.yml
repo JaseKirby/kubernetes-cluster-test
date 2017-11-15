@@ -1,4 +1,6 @@
 # kubectl run --image=nginx:alpine nginx-app --port=80 --env="DOMAIN=cluster"
+# kubectl expose deployment nginx-app --port=80 --name=nginx
+# kubectl run -it cent --image=centos -- /bin/ash
 ---
 apiVersion: v1
 kind: Service

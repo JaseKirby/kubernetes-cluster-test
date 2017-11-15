@@ -54,6 +54,7 @@
   with_items:
     - "{{ kube_config_dir }}/manifests"
     - "{{ kube_config_dir }}/pki"
+    - "{{ kube_config_dir }}/net"
     - "{{ kube_srv_dir }}"
     - /var/lib/kubelet/pki
     - /etc/systemd/system/kubelet.service.d
@@ -143,10 +144,20 @@
 
 # wait for core service ports to come up (apiserver, controller-manager, scheduler, etc.)
 
-- name: flannel networking config file
+- name: flannel networking deployment file
   template:
     src: etc/kube-flannel.yml
-    dest: "{{ kube_config_dir }}/kube-flannel.yml"
+    dest: "{{ kube_config_dir }}/net/kube-flannel.yml"
+
+- name: weave networking deployment file
+  template:
+    src: weave.yml
+    dest: "{{ kube_config_dir }}/net/weave.yml"
+
+- name: core-dns deployment file
+  template:
+    src: core-dns.yml
+    dest: "{{ kube_config_dir }}/net/core-dns.yml"
 
 # use ansible kube module to put kube-flannel in place
 # or use weave networking file
