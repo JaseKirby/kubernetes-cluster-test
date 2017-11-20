@@ -146,17 +146,17 @@
 
 - name: flannel networking deployment file
   template:
-    src: etc/kube-flannel.yml
-    dest: "{{ kube_config_dir }}/net/kube-flannel.yml"
+    src: etc/net/flannel.yml.j2
+    dest: "{{ kube_config_dir }}/net/flannel.yml"
 
 - name: weave networking deployment file
   template:
-    src: weave.yml
-    dest: "{{ kube_config_dir }}/net/weave.yml"
+    src: etc/net/weave.yml.j2
+    dest: "{{ kube_config_dir }}/net/weave.yml.j2"
 
 - name: core-dns deployment file
   template:
-    src: core-dns.yml
+    src: etc/net/core-dns.yml.j2
     dest: "{{ kube_config_dir }}/net/core-dns.yml"
 
 # use ansible kube module to put kube-flannel in place

@@ -1,0 +1,43 @@
+---
+
+- name: certificate authority key ca.key
+  openssl_privatekey:
+    path: "{{ kube_config_dir }}/pki/ca.key"
+    size: 2048
+
+- name: certificate authority crt ca.crt
+  openssl_certificate:
+    path: "{{ kube_config_dir }}/pki/ca.crt"
+    privatekey_path: "{{ kube_config_dir }}/pki/ca.key"
+    subject:
+      CN: "{{ kube_primary_master_ip }}"
+    provider: selfsigned
+
+- name: server key apiserver.key
+  openssl_privatekey:
+    path: "{{ kube_config_dir }}/pki/apiserver.key"
+    size: 2048
+
+- name: certificate signing config file csr.conf
+  template:
+    src: etc/pki/csr.conf.j2
+    dest: "{{ kube_config_dir }}/pki/csr.conf"
+
+- name: apiserver certficate generation from certificate authority
+  shell: openssl x509 -req -in apiserver.key -CA ca.crt -CAkey ca.key -CAcreateserial -out apiserver.crt -days {{ kube_cert_expires_in_days }} -extensions v3_ext -extfile csr.conf
+  args:
+    chdir: "{{ kube_config_dir }}/pki/"
+    creates: apiserver.crt
+
+- name: create service account key pair
+  shell: openssl req -newkey rsa:2048 -nodes -keyout sa.key -x509 -days {{ kube_cert_expires_in_days }} -out sa.pub
+  args:
+    chdir: "{{ kube_config_dir }}/pki/"
+    creates: sa.key
+
+- name: create apiserver kubelet key pair
+  shell: openssl req -newkey rsa:2048 -nodes -keyout apiserver-kubelet-client.key -x509 -days {{ kube_cert_expires_in_days }} -out apiserver-kubelet-client.crt
+  args:
+    chdir: "{{ kube_config_dir }}/pki/"
+    creates: apiserver-kubelet-client.key
+

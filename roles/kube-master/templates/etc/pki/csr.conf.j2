@@ -6,12 +6,12 @@ req_extensions = req_ext
 distinguished_name = dn
     
 [ dn ]
-C = US
-ST = MD
-L = Taneytown
-O = jase.com
-OU = management
-CN = 127.0.0.1
+C = {{ kube_csr_country }}
+ST = {{ kube_csr_state }}
+L = {{ kube_csr_locality }}
+O = {{ kube_csr_org }}
+OU = {{ kube_csr_org_unit }}
+CN = {{ kube_primary_master_ip }}
     
 [ req_ext ]
 subjectAltName = @alt_names
@@ -20,10 +20,10 @@ subjectAltName = @alt_names
 DNS.1 = kubernetes
 DNS.2 = kubernetes.default
 DNS.3 = kubernetes.default.svc
-DNS.4 = kubernetes.default.svc.cluster
-DNS.5 = kubernetes.default.svc.cluster.local
-IP.1 = 127.0.0.1
-IP.2 = 10.0.0.1
+DNS.4 = kubernetes.default.svc.{{ kube_cluster_short_name }}
+DNS.5 = kubernetes.default.svc.{{ kube_cluster_name }}
+IP.1 = {{ kube_primary_master_ip }}
+IP.2 = {{ kube_service_cluster_ip }}
     
 [ v3_ext ]
 authorityKeyIdentifier=keyid,issuer:always
