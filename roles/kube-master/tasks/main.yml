@@ -152,7 +152,7 @@
 - name: weave networking deployment file
   template:
     src: etc/net/weave.yml.j2
-    dest: "{{ kube_config_dir }}/net/weave.yml.j2"
+    dest: "{{ kube_config_dir }}/net/weave.yml"
 
 - name: core-dns deployment file
   template:

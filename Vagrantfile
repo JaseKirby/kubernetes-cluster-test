@@ -5,8 +5,8 @@ Vagrant.configure("2") do |config|
     config.vm.provider "hyperv" do |h|
         h.enable_virtualization_extensions = true
         h.differencing_disk = true
+        h.memory = 2048
     end
-    config.vm.memory = 2048
     config.vm.box_check_update = false
     config.vm.network "private_network"
     # config.vm.network "forwarded_port", guest: 8001, host: 8001
