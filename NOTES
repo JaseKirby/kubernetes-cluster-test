@@ -20,3 +20,9 @@ openssl req -newkey rsa:2048 -nodes -keyout apiserver-kubelet-client.key -x509 -
 
 TODO kubelet client cert generation
 TODO coredns or kube-dns service discovery
+
+To Access Dashboard
+kubectl -n kube-system edit service kubernetes-dashboard
+    change ClusterIp to node port
+kubectl get all --all-namespaces
+    note port of kube-dashboard and then get vagrant VM ip and call

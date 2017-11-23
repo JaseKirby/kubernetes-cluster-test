@@ -143,6 +143,7 @@
     - sa.pub
 
 # wait for core service ports to come up (apiserver, controller-manager, scheduler, etc.)
+# machine also has to be rebooted to wipe out SELINUX before network files applied
 
 - name: flannel networking deployment file
   template:
@@ -158,6 +159,11 @@
   template:
     src: etc/net/core-dns.yml.j2
     dest: "{{ kube_config_dir }}/net/core-dns.yml"
+
+- name: kube-dashboard file
+  template:
+    src: kube-dashboard.yml
+    dest: "{{ kube_config_dir }}/kube-dashboard.yml"
 
 # use ansible kube module to put kube-flannel in place
 # or use weave networking file

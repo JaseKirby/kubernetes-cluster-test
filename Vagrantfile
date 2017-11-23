@@ -9,7 +9,6 @@ Vagrant.configure("2") do |config|
     end
     config.vm.box_check_update = false
     config.vm.network "private_network"
-    # config.vm.network "forwarded_port", guest: 8001, host: 8001
     config.vm.synced_folder ".", "/vagrant", type: "smb", smb_username: smb_user, smb_password: smb_pass, mount_options: ["username=#{smb_user}","password=#{smb_pass}"]
     config.vm.provision "ansible_local" do |ansible|
         ansible.playbook = "provision.yml"
