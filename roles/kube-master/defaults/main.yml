@@ -1,6 +1,7 @@
 ---
 kube_primary_master: "{{ groups[['kube-masters'][0]] }}"
-kube_primary_master_ip: "{{ hostvars[kube_primary_master].ansible_default_ipv4.address }}" # ovverride with VIP for manager machines with multi manager setup
+# kube_primary_master_ip: "{{ hostvars[kube_primary_master]['host_ip'] }}"  ovverride with VIP for manager machines with multi manager setup
+kube_primary_master_ip: 172.17.177.11
 kube_cluster_short_name: cluster
 kube_cluster_name: cluster.local
 kube_cluster_pod_cidr: "10.10.0.0/16"

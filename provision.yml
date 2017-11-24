@@ -1,5 +1,16 @@
 ---
-- hosts: default
+- name: copy key files and change permissions
+  hosts: manager
+  gather_facts: false
+  tasks:
+    - copy:
+        src: /vagrant/.vagrant/machines/node1/virtualbox/private_key
+        dest: /home/vagrant/node1_private_key
+        mode: 0400
+        owner: vagrant
+
+- name: kube-masters config
+  hosts: kube-masters
   gather_facts: true
   become: true
   roles:

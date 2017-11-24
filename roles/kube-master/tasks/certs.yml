@@ -1,22 +1,22 @@
 ---
 
-- name: certificate authority key ca.key
-  openssl_privatekey:
-    path: "{{ kube_config_dir }}/pki/ca.key"
-    size: 2048
+- name: certificate authority private key
+  shell: openssl genrsa -out ca.key 2048
+  args:
+    chdir: "{{ kube_config_dir }}/pki/"
+    creates: ca.key
 
-- name: certificate authority crt ca.crt
-  openssl_certificate:
-    path: "{{ kube_config_dir }}/pki/ca.crt"
-    privatekey_path: "{{ kube_config_dir }}/pki/ca.key"
-    subject:
-      CN: "{{ kube_primary_master_ip }}"
-    provider: selfsigned
+- name: certificate authority public cert ca.crt
+  shell: openssl req -x509 -new -nodes -key ca.key -subj "/CN={{ kube_primary_master_ip }}" -days 10000 -out ca.crt
+  args:
+    chdir: "{{ kube_config_dir }}/pki/"
+    creates: ca.crt
 
-- name: server key apiserver.key
-  openssl_privatekey:
-    path: "{{ kube_config_dir }}/pki/apiserver.key"
-    size: 2048
+- name: apiserver private key apiserver.key
+  shell: openssl genrsa -out apiserver.key 2048
+  args:
+    chdir: "{{ kube_config_dir }}/pki/"
+    creates: apiserver.key
 
 - name: certificate signing config file csr.conf
   template:
@@ -35,9 +35,9 @@
     chdir: "{{ kube_config_dir }}/pki/"
     creates: sa.key
 
-- name: create apiserver kubelet key pair
-  shell: openssl req -newkey rsa:2048 -nodes -keyout apiserver-kubelet-client.key -x509 -days {{ kube_cert_expires_in_days }} -out apiserver-kubelet-client.crt
-  args:
-    chdir: "{{ kube_config_dir }}/pki/"
-    creates: apiserver-kubelet-client.key
+# - name: create apiserver kubelet key pair
+#   shell: openssl req -newkey rsa:2048 -nodes -keyout apiserver-kubelet-client.key -x509 -days {{ kube_cert_expires_in_days }} -out apiserver-kubelet-client.crt
+#   args:
+#     chdir: "{{ kube_config_dir }}/pki/"
+#     creates: apiserver-kubelet-client.key
 

@@ -28,7 +28,7 @@ spec:
     - --secure-port=6443
     - --requestheader-extra-headers-prefix=X-Remote-Extra-
     - --client-ca-file=/etc/kubernetes/pki/ca.crt
-    - --advertise-address={{ ansible_default_ipv4.address }}
+    - --advertise-address={{ host_ip }}
     - --service-cluster-ip-range={{ kube_service_cluster_ip_range }}
     # - --requestheader-client-ca-file=/etc/kubernetes/pki/front-proxy-ca.crt
     # - --enable-bootstrap-token-auth=true

@@ -130,17 +130,19 @@
     - kube-controller-manager
     - kube-scheduler
 
-- name: certificates
-  copy:
-    src: private/cert/{{ item }}
-    dest: "{{ kube_config_dir }}/pki/{{ item }}"
-  with_items:
-    - apiserver.key
-    - apiserver.crt
-    - ca.crt
-    - ca.key
-    - sa.key
-    - sa.pub
+# - name: certificates
+#   copy:
+#     src: private/cert/{{ item }}
+#     dest: "{{ kube_config_dir }}/pki/{{ item }}"
+#   with_items:
+#     - apiserver.key
+#     - apiserver.crt
+#     - ca.crt
+#     - ca.key
+#     - sa.key
+#     - sa.pub
+
+- include_tasks: certs.yml
 
 # wait for core service ports to come up (apiserver, controller-manager, scheduler, etc.)
 # machine also has to be rebooted to wipe out SELINUX before network files applied
