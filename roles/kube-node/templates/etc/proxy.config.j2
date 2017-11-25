@@ -8,11 +8,11 @@ clusters:
 contexts:
   - context:
       cluster: kubernetes
-      user: proxy
-    name: proxy-to-kubernetes
-current-context: proxy-to-kubernetes
+      user: system:kube-proxy
+    name: system:kube-proxy@kubernetes
+current-context: system:kube-proxy@kubernetes
 users:
-  - name: proxy
+  - name: system:kube-proxy
     user:
       client-certificate: {{ kube_config_dir }}/pki/proxy.crt
       client-key: {{ kube_config_dir }}/pki/proxy.key

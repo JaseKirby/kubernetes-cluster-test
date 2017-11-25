@@ -6,7 +6,7 @@
     creates: "{{ inventory_hostname }}.key"
 
 - name: create kubelet certificate signing request
-  shell: openssl req -new -key {{ inventory_hostname }}.key -out {{ inventory_hostname }}.csr -subj "/CN=system:node:{{ host_ip }}/O=kubelet"
+  shell: openssl req -new -key {{ inventory_hostname }}.key -out {{ inventory_hostname }}.csr -subj "/CN=system:node:{{ inventory_hostname }}/O=system:nodes"
   args:
     chdir: "{{ kube_config_dir }}/pki/"
     creates: "{{ inventory_hostname }}.csr"
