@@ -23,8 +23,14 @@
     src: etc/pki/csr.conf.j2
     dest: "{{ kube_config_dir }}/pki/csr.conf"
 
+- name: apiserver certificate signing request apiserver.csr
+  shell: openssl req -new -key apiserver.key -out apiserver.csr -config csr.conf
+  args:
+    chdir: "{{ kube_config_dir }}/pki/"
+    creates: apiserver.csr
+
 - name: apiserver certficate generation from certificate authority
-  shell: openssl x509 -req -in apiserver.key -CA ca.crt -CAkey ca.key -CAcreateserial -out apiserver.crt -days {{ kube_cert_expires_in_days }} -extensions v3_ext -extfile csr.conf
+  shell: openssl x509 -req -in apiserver.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out apiserver.crt -days {{ kube_cert_expires_in_days }} -extensions v3_ext -extfile csr.conf
   args:
     chdir: "{{ kube_config_dir }}/pki/"
     creates: apiserver.crt
@@ -35,9 +41,20 @@
     chdir: "{{ kube_config_dir }}/pki/"
     creates: sa.key
 
-# - name: create apiserver kubelet key pair
-#   shell: openssl req -newkey rsa:2048 -nodes -keyout apiserver-kubelet-client.key -x509 -days {{ kube_cert_expires_in_days }} -out apiserver-kubelet-client.crt
-#   args:
-#     chdir: "{{ kube_config_dir }}/pki/"
-#     creates: apiserver-kubelet-client.key
+- name: kubelet client private key apiserver-kubelet-client.key
+  shell: openssl genrsa -out apiserver-kubelet-client.key 2048
+  args:
+    chdir: "{{ kube_config_dir }}/pki/"
+    creates: apiserver-kubelet-client.key
 
+- name: create kubelet client certificate signing request
+  shell: openssl req -new -key apiserver-kubelet-client.key -out apiserver-kubelet-client.csr -subj "/CN=kubelet-client/O=kubelet-client"
+  args:
+    chdir: "{{ kube_config_dir }}/pki/"
+    creates: "apiserver-kubelet-client.csr"
+
+- name: kubelet client certificate signing by authority apiserver-kubelet-client.crt
+  shell: openssl x509 -req -in apiserver-kubelet-client.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out apiserver-kubelet-client.crt -days 10000
+  args:
+    chdir: "{{ kube_config_dir }}/pki/"
+    creates: apiserver-kubelet-client.crt

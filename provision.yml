@@ -3,11 +3,14 @@
   hosts: manager
   gather_facts: false
   tasks:
-    - copy:
-        src: /vagrant/.vagrant/machines/node1/virtualbox/private_key
-        dest: /home/vagrant/node1_private_key
+    - name: copy keys
+      copy:
+        src: /vagrant/.vagrant/machines/{{ item }}/virtualbox/private_key
+        dest: /home/vagrant/{{ item }}_private_key
         mode: 0400
         owner: vagrant
+      with_items:
+        - node1
 
 - name: kube-masters config
   hosts: kube-masters
@@ -15,3 +18,15 @@
   become: true
   roles:
     - kube-master
+  tags:
+    - kube-master
+
+- name: kube-nodes config
+  hosts: kube-nodes
+  gather_facts: true
+  become: true
+  roles:
+    - kube-node
+  tags:
+    - kube-node
+    

@@ -1,12 +1,3 @@
-still need to look into etcd-events pod manifest
-https://github.com/kubernetes/kubernetes/blob/master/cluster/saltbase/salt/etcd/etcd.manifest
-
-all certs
-
-[root@localhost pki]# ls
-apiserver.crt  apiserver.key  apiserver-kubelet-client.crt  apiserver-kubelet-client.key  ca.crt  ca.key  front-proxy-ca.crt  front-proxy-ca.key  front-proxy-client.crt  front-proxy-client.key  sa.key  sa.pub
-[root@localhost pki]# pwd
-/etc/kubernetes/pki
 
 generating certs will have to be done for each environmen or cluster as IPs are in cert request
 
@@ -14,12 +5,13 @@ openssl genrsa -out ca.key 2048
 openssl req -x509 -new -nodes -key ca.key -subj "/CN=127.0.0.1" -days 10000 -out ca.crt
 openssl genrsa -out apiserver.key 2048
 openssl x509 -req -in apiserver.key -CA ca.crt -CAkey ca.key -CAcreateserial -out apiserver.crt -days 10000 -extensions v3_ext -extfile csr.conf
-
 openssl req -newkey rsa:2048 -nodes -keyout sa.key -x509 -days 10000 -out sa.pub
+
 openssl req -newkey rsa:2048 -nodes -keyout apiserver-kubelet-client.key -x509 -days 10000 -out apiserver-kubelet-client.crt
 
-TODO kubelet client cert generation
-TODO coredns or kube-dns service discovery
+kubelet client cert generation
+    ca.crt from master needs to go to node
+    openssl x509 -req -in node1.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out node1.crt -days 10000
 
 To Access Dashboard
 kubectl -n kube-system edit service kubernetes-dashboard

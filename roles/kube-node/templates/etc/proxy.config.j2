@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Config
+clusters:
+  - cluster:
+      certificate-authority: {{ kube_config_dir }}/pki/ca.crt
+      server: https://{{ kube_primary_master_ip }}:6443
+    name: kubernetes
+contexts:
+  - context:
+      cluster: kubernetes
+      user: proxy
+    name: proxy-to-kubernetes
+current-context: proxy-to-kubernetes
+users:
+  - name: proxy
+    user:
+      client-certificate: {{ kube_config_dir }}/pki/proxy.crt
+      client-key: {{ kube_config_dir }}/pki/proxy.key

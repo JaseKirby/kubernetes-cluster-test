@@ -1,0 +1,12 @@
+---
+- name: kubelet private key
+  shell: openssl genrsa -out {{ inventory_hostname }}.key 2048
+  args:
+    chdir: "{{ kube_config_dir }}/pki/"
+    creates: "{{ inventory_hostname }}.key"
+
+- name: create kubelet certificate signing request
+  shell: openssl req -new -key {{ inventory_hostname }}.key -out {{ inventory_hostname }}.csr -subj "/CN=system:node:{{ host_ip }}/O=kubelet"
+  args:
+    chdir: "{{ kube_config_dir }}/pki/"
+    creates: "{{ inventory_hostname }}.csr"

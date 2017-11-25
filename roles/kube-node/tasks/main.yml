@@ -61,45 +61,37 @@
     - /etc/cni/net.d
     - /opt/cni/bin
 
+- include_tasks: certs.yml
+
 - name: kubelet systemd service file
   template:
     src: systemd/kubelet.service.j2
     dest: /etc/systemd/system/kubelet.service
-
-- name: kubelet systemd conf directory
-  file:
-    path: /etc/systemd/system/kubelet.service.d
-    state: directory
 
 - name: kubelet systemd environment file
   template:
     src: systemd/kubelet.conf.j2
     dest: /etc/systemd/system/kubelet.service.d/kubelet.conf
 
+- name: kubelet kubeconfig file
+  template:
+    src: etc/kubelet.config.j2
+    dest: "{{ kube_config_dir }}/kubelet.config"
+
 - name: kube-proxy systemd service file
   template:
     src: systemd/kube-proxy.service.j2
     dest: /etc/systemd/system/kube-proxy.service
-
-- name: kube-proxy systemd conf directory
-  file:
-    path: /etc/systemd/system/kube-proxy.service.d
-    state: directory
 
 - name: kube-proxy systemd environment file
   template:
     src: systemd/kube-proxy.conf.j2
     dest: /etc/systemd/system/kube-proxy.service.d/kube-proxy.conf
 
-- name: kubeconfig files
+- name: kube-proxy kubeconfig file
   template:
-    src: etc/{{ item }}.config.j2
-    dest: /etc/kubernetes/{{ item }}.config
-  with_items:
-    - admin
-    - controller-manager
-    - kubelet
-    - scheduler
+    src: etc/proxy.config.j2
+    dest: "{{ kube_config_dir }}/proxy.config"
 
 - name: cni 0.5.2 binaries
   copy:
@@ -119,46 +111,3 @@
     - ptp
     - tuning
 
-- name: kubelet manifests
-  template:
-    src: etc/manifests/{{ item }}.yml
-    dest: "{{ kube_config_dir }}/manifests/{{ item }}.yml"
-  with_items:
-    - etcd
-    - kube-apiserver
-    - kube-controller-manager
-    - kube-scheduler
-
-- include_tasks: certs.yml
-
-# wait for core service ports to come up (apiserver, controller-manager, scheduler, etc.)
-# machine also has to be rebooted to wipe out SELINUX before network files applied
-
-- name: flannel networking deployment file
-  template:
-    src: etc/net/flannel.yml.j2
-    dest: "{{ kube_config_dir }}/net/flannel.yml"
-
-- name: weave networking deployment file
-  template:
-    src: etc/net/weave.yml.j2
-    dest: "{{ kube_config_dir }}/net/weave.yml"
-
-- name: core-dns deployment file
-  template:
-    src: etc/net/core-dns.yml.j2
-    dest: "{{ kube_config_dir }}/net/core-dns.yml"
-
-- name: kube-dashboard file
-  template:
-    src: kube-dashboard.yml
-    dest: "{{ kube_config_dir }}/kube-dashboard.yml"
-
-# use ansible kube module to put kube-flannel in place
-# or use weave networking file
-
-# kube-dns or OpenDNS for service discovery
-
-# kubelet service
-
-# kube-proxy service

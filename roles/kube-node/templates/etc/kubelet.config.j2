@@ -1,0 +1,19 @@
+apiVersion: v1
+clusters:
+- cluster:
+    certificate-authority: /etc/kubernetes/pki/ca.crt
+    server: https://172.17.177.11:6443
+  name: kubernetes
+contexts:
+- context:
+    cluster: kubernetes
+    user: system:node:node1
+  name: system:node:node1@kubernetes
+current-context: system:node:node1@kubernetes
+kind: Config
+preferences: {}
+users:
+- name: system:node:node1
+  user:
+    client-certificate: /etc/kubernetes/pki/node1.crt
+    client-key: /etc/kubernetes/pki/node1.key
