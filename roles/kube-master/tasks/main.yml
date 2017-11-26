@@ -105,23 +105,24 @@
     - kubelet
     - scheduler
 
-- name: cni 0.5.2 binaries
+- name: cni 0.6.0 binaries
   copy:
-    src: private/repo/cni/{{ item }}
+    src: private/repo/cni-0.6.0/{{ item }}
     dest: /opt/cni/bin/{{ item }}
     mode: 0755
   with_items:
     - bridge
-    - cnitool
     - dhcp
     - flannel
     - host-local
     - ipvlan
     - loopback
     - macvlan
-    - noop
+    - portmap
     - ptp
+    - sample
     - tuning
+    - vlan
 
 - name: kubelet manifests
   template:
