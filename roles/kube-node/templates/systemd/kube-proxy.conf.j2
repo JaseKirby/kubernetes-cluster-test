@@ -1,4 +1,5 @@
 [Service]
 Environment="KUBE_PROXY_KUBECONFIG=--kubeconfig=/etc/kubernetes/proxy.config"
+Environment="KUBE_CLUSTER_CIDR=--cluster-cidr={{ kube_service_cluster_ip_range }}"
 ExecStart=
-ExecStart=/usr/bin/kube-proxy $KUBE_PROXY_KUBECONFIG
+ExecStart=/usr/bin/kube-proxy $KUBE_PROXY_KUBECONFIG $KUBE_CLUSTER_CIDR
