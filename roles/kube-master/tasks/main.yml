@@ -159,6 +159,11 @@
     src: kube-dashboard.yml
     dest: "{{ kube_config_dir }}/kube-dashboard.yml"
 
+- name: token auth file
+  template:
+    src: token-auth.csv
+    dest: "{{ kube_config_dir }}/pki/token-auth.csv"
+
 # use ansible kube module to put kube-flannel in place
 # or use weave networking file
 

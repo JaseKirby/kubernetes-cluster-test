@@ -35,6 +35,7 @@ spec:
     - --admission-control=Initializers,NamespaceLifecycle,LimitRanger,ServiceAccount,PersistentVolumeLabel,DefaultStorageClass,DefaultTolerationSeconds,NodeRestriction,ResourceQuota
     - --kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname
     - --authorization-mode=Node,RBAC
+    - --token-auth-file={{ kube_config_dir }}/pki/token-auth.csv
     - --etcd-servers=http://127.0.0.1:2379
     image: gcr.io/google_containers/kube-apiserver-amd64:v1.8.2
     livenessProbe:

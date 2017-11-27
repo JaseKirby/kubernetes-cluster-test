@@ -19,3 +19,13 @@ kubectl -n kube-system edit service kubernetes-dashboard
     change ClusterIp to node port
 kubectl get all --all-namespaces
     note port of kube-dashboard and then get vagrant VM ip and call
+
+cluster-admin create kubeconfig file with embedded certs (this did not work for kube-dashboard used token based auth csv file instead)
+    kubectl config set-cluster cluster.local --certificate-authority=/etc/kubernetes/pki/ca.crt --embed-certs=true --server=https://172.17.177.11:6443 --kubeconfig=admin.kubeconfig
+    kubectl config set-credentials cluster-admin --client-certificate=/etc/kubernetes/pki/admin.crt --client-key=/etc/kubernetes/pki/admin.key --embed-certs=true --kubeconfig=admin.kubeconfig
+    kubectl config set-context default --cluster=cluster.local --user=cluster-admin --kubeconfig=admin.kubeconfig
+
+kubectl get logs problem
+    when kubectl describe no node1 you get eth0 ip as internal IP which is vagrant assigned and this is based
+        - --kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname # may be vagrant issue here with kubectl logs https://github.com/kubernetes/kubernetes/issues/45583
+    putting manual --node-ip=   in kubelet args should solve this
