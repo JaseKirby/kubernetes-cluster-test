@@ -112,12 +112,14 @@
     mode: 0755
   with_items:
     - bridge
+    - cnitool
     - dhcp
     - flannel
     - host-local
     - ipvlan
     - loopback
     - macvlan
+    - noop
     - portmap
     - ptp
     - sample
