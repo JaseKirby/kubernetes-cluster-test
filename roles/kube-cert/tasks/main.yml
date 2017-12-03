@@ -102,6 +102,27 @@
     creates: "{{ item }}.crt"
   with_items: "{{ groups['kube-nodes'] }}"
 
+- name: kubelet master node private key
+  shell: openssl genrsa -out {{ item }}.key 2048
+  args:
+    chdir: "{{ kube_config_dir }}/pki/"
+    creates: "{{ item }}.key"
+  with_items: "{{ groups['kube-masters'] }}"
+
+- name: create kubelet master node certificate signing request
+  shell: openssl req -new -key {{ item }}.key -out {{ item }}.csr -subj "/CN=system:node:{{ item }}/O=system:nodes"
+  args:
+    chdir: "{{ kube_config_dir }}/pki/"
+    creates: "{{ item }}.csr"
+  with_items: "{{ groups['kube-masters'] }}"
+
+- name: kubelet master node certificate signing by authority proxy.crt
+  shell: openssl x509 -req -in {{ item }}.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out {{ item }}.crt -days {{ kube_cert_expires_in_days }}
+  args:
+    chdir: "{{ kube_config_dir }}/pki/"
+    creates: "{{ item }}.crt"
+  with_items: "{{ groups['kube-masters'] }}"
+
 - name: cluster admin private key admin.key
   shell: openssl genrsa -out admin.key 2048
   args:

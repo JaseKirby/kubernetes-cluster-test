@@ -29,3 +29,7 @@ kubectl get logs problem
     when kubectl describe no node1 you get eth0 ip as internal IP which is vagrant assigned and this is based
         - --kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname # may be vagrant issue here with kubectl logs https://github.com/kubernetes/kubernetes/issues/45583
     putting manual --node-ip=   in kubelet args should solve this
+
+kubelet node labels
+    node-role.kubernetes.io/master=""
+    node-role.kubernetes.io/worker=""

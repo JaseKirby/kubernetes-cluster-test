@@ -23,6 +23,10 @@
     fstype: swap
     state: absent
 
+- name: disable swap
+  command: swapoff -a
+  ignore_errors: yes
+
 - name: disable selinux
   selinux:
     state: disabled
@@ -119,18 +123,16 @@
 - include: docker-creds.yml
   when: kube_has_docker_reg_creds
   
-# - name: kubelet service
-#   systemd:
-#     name: kubelet
-#     state: started
-#     enabled: yes
-#     daemon_reload: yes
-#   when: "'kube-masters' not in group_names"
+- name: kubelet service
+  systemd:
+    name: kubelet
+    state: started
+    enabled: yes
+    daemon_reload: yes
 
-# - name: kube-proxy
-#   systemd:
-#     name: kube-proxy
-#     state: started
-#     enabled: yes
-#     daemon_reload: yes
-#   when: "'kube-masters' not in group_names"
+- name: kube-proxy
+  systemd:
+    name: kube-proxy
+    state: started
+    enabled: yes
+    daemon_reload: yes

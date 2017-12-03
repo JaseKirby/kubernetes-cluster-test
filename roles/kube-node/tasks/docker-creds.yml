@@ -7,7 +7,7 @@
 - name: docker login
   shell: docker login {{ kube_docker_registry }} -u anonymous -p anonymous
 
-- name: copy
+- name: copy config.json cached credentials file
   copy:
     src: ~/.docker/config.json
     dest: /var/lib/kubelet/.docker/config.json

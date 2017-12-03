@@ -18,9 +18,7 @@
     - kube-controller-manager
     - kube-scheduler
 
-- include_tasks: certs.yml
-
-# wait for core service ports to come up (apiserver, controller-manager, scheduler, etc.)
+- include: certs.yml
 
 - name: flannel networking deployment file
   template:
@@ -42,11 +40,32 @@
     src: token-auth.csv
     dest: "{{ kube_config_dir }}/pki/token-auth.csv"
 
-# use ansible kube module to put kube-flannel in place
-# or use weave networking file
+- name: wait for etcd port to become responsive
+  wait_for:
+    port: 2379
+    delay: 20
+    timeout: 700
 
-# kube-dns or OpenDNS for service discovery
+- name: wait for apiserver port to become responsive
+  wait_for:
+    port: 6443
+    delay: 20
 
-# kubelet service
+- name: wait for scheduler port to become responsive
+  wait_for:
+    port: 10251
+    delay: 20
 
-# kube-proxy service
+- name: wait for controller manager port to become responsive
+  wait_for:
+    port: 10252
+    delay: 20
+
+- name: kubectl apply flannel
+  command: kubectl apply -f {{ kube_config_dir }}/net/flannel.yml
+
+- name: kubectl apply coreDNS
+  command: kubectl apply -f {{ kube_config_dir }}/net/core-dns.yml
+
+- name: kubectl apply kube dashboard
+  command: kubectl apply -f {{ kube_config_dir }}/kube-dashboard.yml
