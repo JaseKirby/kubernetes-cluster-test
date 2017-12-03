@@ -9,4 +9,5 @@ node1
 manager
 
 [kube-nodes]
+manager
 node1

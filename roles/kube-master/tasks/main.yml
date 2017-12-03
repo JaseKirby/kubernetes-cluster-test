@@ -1,100 +1,4 @@
 ---
-- name: set hostname to ansible inventory_hostname
-  hostname:
-    name: "{{ inventory_hostname }}"
-    
-- name: sysctl enable ipv4 forwarding
-  sysctl:
-    name: net.ipv4.ip_forward
-    value: 1
-    state: present
-    reload: yes
-
-- name: net-tools
-  yum:
-    name: net-tools
-    state: present
-
-- name: remove swapfile from /etc/fstab
-  mount:
-    name: swap
-    fstype: swap
-    state: absent
-
-- name: disable swap
-  command: swapoff -a
-  when: ansible_swaptotal_mb > 0
-
-# sestatus to check
-- name: disable selinux
-  selinux:
-    state: disabled
-
-- name: sysctl route all traffic through iptables 
-  sysctl:
-    name: net.bridge.bridge-nf-call-iptables
-    value: 1
-    state: present
-    reload: yes
-
-- name: kubernetes binaries
-  copy:
-    src: /vagrant/private/repo/kubernetes/server/bin/{{ item }}
-    dest: /usr/bin/{{ item }}
-    mode: 0755
-  with_items:
-    - kubelet
-    - kube-proxy
-    - kubectl
-
-- name: kubernetes kube user
-  user:
-    name: kube
-
-- name: kubernetes directories
-  file:
-    path: "{{ item }}"
-    state: directory
-  with_items:
-    - "{{ kube_config_dir }}/manifests"
-    - "{{ kube_config_dir }}/pki"
-    - "{{ kube_config_dir }}/net"
-    - /var/lib/kubelet/pki
-    - /etc/systemd/system/kubelet.service.d
-    - /etc/systemd/system/kube-proxy.service.d
-    - /etc/cni/net.d
-    - /opt/cni/bin
-
-- name: kubelet systemd service file
-  template:
-    src: systemd/kubelet.service.j2
-    dest: /etc/systemd/system/kubelet.service
-
-- name: kubelet systemd conf directory
-  file:
-    path: /etc/systemd/system/kubelet.service.d
-    state: directory
-
-- name: kubelet systemd environment file
-  template:
-    src: systemd/kubelet.conf.j2
-    dest: /etc/systemd/system/kubelet.service.d/kubelet.conf
-
-- name: kube-proxy systemd service file
-  template:
-    src: systemd/kube-proxy.service.j2
-    dest: /etc/systemd/system/kube-proxy.service
-
-- name: kube-proxy systemd conf directory
-  file:
-    path: /etc/systemd/system/kube-proxy.service.d
-    state: directory
-
-- name: kube-proxy systemd environment file
-  template:
-    src: systemd/kube-proxy.conf.j2
-    dest: /etc/systemd/system/kube-proxy.service.d/kube-proxy.conf
-
 - name: kubeconfig files
   template:
     src: etc/{{ item }}.config.j2
@@ -102,29 +6,7 @@
   with_items:
     - admin
     - controller-manager
-    - kubelet
     - scheduler
-
-- name: cni 0.6.0 binaries
-  copy:
-    src: private/repo/cni-0.6.0/{{ item }}
-    dest: /opt/cni/bin/{{ item }}
-    mode: 0755
-  with_items:
-    - bridge
-    - cnitool
-    - dhcp
-    - flannel
-    - host-local
-    - ipvlan
-    - loopback
-    - macvlan
-    - noop
-    - portmap
-    - ptp
-    - sample
-    - tuning
-    - vlan
 
 - name: kubelet manifests
   template:
@@ -139,21 +21,15 @@
 - include_tasks: certs.yml
 
 # wait for core service ports to come up (apiserver, controller-manager, scheduler, etc.)
-# machine also has to be rebooted to wipe out SELINUX before network files applied
 
 - name: flannel networking deployment file
   template:
-    src: etc/net/flannel.yml.j2
+    src: etc/net/flannel.yml
     dest: "{{ kube_config_dir }}/net/flannel.yml"
-
-- name: weave networking deployment file
-  template:
-    src: etc/net/weave.yml.j2
-    dest: "{{ kube_config_dir }}/net/weave.yml"
 
 - name: core-dns deployment file
   template:
-    src: etc/net/core-dns.yml.j2
+    src: etc/net/core-dns.yml
     dest: "{{ kube_config_dir }}/net/core-dns.yml"
 
 - name: kube-dashboard file

@@ -1,8 +1,7 @@
 ---
 kube_version: 1.8.2
-kube_primary_master: "{{ groups[['kube-masters'][0]] }}"
-# kube_primary_master_ip: "{{ hostvars[kube_primary_master]['host_ip'] }}"  ovverride with VIP for manager machines with multi manager setup
-kube_primary_master_ip: 172.17.177.11
+kube_primary_master: "{{ groups['kube-masters'][0] }}"
+kube_primary_master_ip: "{{ hostvars[kube_primary_master]['host_ip'] }}"  # ovverride with VIP for manager machines with multi manager setup
 kube_cluster_short_name: cluster
 kube_cluster_name: cluster.local
 kube_config_dir: /etc/kubernetes
@@ -10,3 +9,7 @@ kube_cluster_pod_cidr: "10.10.0.0/16"
 kube_service_cluster_ip_range: "10.77.0.0/16"
 kube_service_cluster_ip: "10.77.0.1"
 kube_dns_ip: "10.77.0.10"
+kube_sysctl_file: /etc/sysctl.d/98-kube.conf
+kube_docker_registry: gcr.io
+kube_has_docker_reg_creds: false
+kube_pod_infra_container_image: "{{ kube_docker_registry }}/google_containers/pause-amd64:3.0"

@@ -1,0 +1,13 @@
+---
+kube_primary_master: "{{ groups['kube-masters'][0] }}"
+kube_primary_master_ip: "{{ hostvars[kube_primary_master]['host_ip'] }}"  # ovverride with VIP for manager machines with multi manager setup
+kube_service_cluster_ip: "10.77.0.1"
+kube_config_dir: /etc/kubernetes
+kube_cluster_short_name: cluster
+kube_cluster_name: cluster.local
+kube_csr_country: US
+kube_csr_state: AA
+kube_csr_locality: Anytown
+kube_csr_org: example.com
+kube_csr_org_unit: management
+kube_cert_expires_in_days: 100000

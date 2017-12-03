@@ -1,0 +1,14 @@
+---
+- name: .docker dir
+  file:
+    path: /var/lib/kubelet/.docker
+    state: directory
+
+- name: docker login
+  shell: docker login {{ kube_docker_registry }} -u anonymous -p anonymous
+
+- name: copy
+  copy:
+    src: ~/.docker/config.json
+    dest: /var/lib/kubelet/.docker/config.json
+    remote_src: true

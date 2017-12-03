@@ -1,12 +1,23 @@
 ---
-- name: kubelet private key
-  shell: openssl genrsa -out {{ inventory_hostname }}.key 2048
-  args:
-    chdir: "{{ kube_config_dir }}/pki/"
-    creates: "{{ inventory_hostname }}.key"
+- name: copy key from cert authority
+  copy:
+    src: "{{ kube_config_dir }}/pki/{{ inventory_hostname }}.key"
+    dest: "{{ kube_config_dir }}/pki/{{ inventory_hostname }}.key"
 
-- name: create kubelet certificate signing request
-  shell: openssl req -new -key {{ inventory_hostname }}.key -out {{ inventory_hostname }}.csr -subj "/CN=system:node:{{ inventory_hostname }}/O=system:nodes"
-  args:
-    chdir: "{{ kube_config_dir }}/pki/"
-    creates: "{{ inventory_hostname }}.csr"
+- name: copy crt from cert authority
+  copy:
+    src: "{{ kube_config_dir }}/pki/{{ inventory_hostname }}.crt"
+    dest: "{{ kube_config_dir }}/pki/{{ inventory_hostname }}.crt"
+
+- name: copy certs and keys
+  copy:
+    src: "{{ kube_config_dir }}/pki/{{ item }}"
+    dest: "{{ kube_config_dir }}/pki/{{ item }}"
+  with_items:
+    - "{{ inventory_hostname }}.key"
+    - "{{ inventory_hostname }}.crt"
+    - ca.crt
+    - apiserver-kubelet-client.key
+    - apiserver-kubelet-client.crt
+    - proxy.key
+    - proxy.crt

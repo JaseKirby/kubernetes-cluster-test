@@ -1,18 +1,20 @@
----
-- name: set hostname to ansible inventory_hostname
-  hostname:
-    name: "{{ inventory_hostname }}"
-    
+--- 
 - name: sysctl enable ipv4 forwarding
   sysctl:
     name: net.ipv4.ip_forward
     value: 1
     state: present
     reload: yes
+    sysctl_file: "{{ kube_sysctl_file }}"
 
 - name: net-tools
   yum:
     name: net-tools
+    state: present
+
+- name: conntrack
+  yum:
+    name: conntrack
     state: present
 
 - name: remove swapfile from /etc/fstab
@@ -21,21 +23,9 @@
     fstype: swap
     state: absent
 
-- name: disable swap
-  command: swapoff -a
-  when: ansible_swaptotal_mb > 0
-
-# sestatus to check
 - name: disable selinux
   selinux:
     state: disabled
-
-- name: sysctl route all traffic through iptables 
-  sysctl:
-    name: net.bridge.bridge-nf-call-iptables
-    value: 1
-    state: present
-    reload: yes
 
 - name: kubernetes binaries
   copy:
@@ -46,6 +36,14 @@
     - kubelet
     - kube-proxy
     - kubectl
+
+- name: sysctl route all traffic through iptables 
+  sysctl:
+    name: net.bridge.bridge-nf-call-iptables
+    value: 1
+    state: present
+    reload: yes
+    sysctl_file: "{{ kube_sysctl_file }}"
 
 - name: kubernetes kube user
   user:
@@ -65,7 +63,7 @@
     - /etc/cni/net.d
     - /opt/cni/bin
 
-- include_tasks: certs.yml
+- include: certs.yml
 
 - name: kubelet systemd service file
   template:
@@ -118,3 +116,21 @@
     - tuning
     - vlan
 
+- include: docker-creds.yml
+  when: kube_has_docker_reg_creds
+  
+# - name: kubelet service
+#   systemd:
+#     name: kubelet
+#     state: started
+#     enabled: yes
+#     daemon_reload: yes
+#   when: "'kube-masters' not in group_names"
+
+# - name: kube-proxy
+#   systemd:
+#     name: kube-proxy
+#     state: started
+#     enabled: yes
+#     daemon_reload: yes
+#   when: "'kube-masters' not in group_names"

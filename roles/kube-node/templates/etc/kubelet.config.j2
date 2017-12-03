@@ -1,19 +1,19 @@
 apiVersion: v1
 clusters:
 - cluster:
-    certificate-authority: /etc/kubernetes/pki/ca.crt
-    server: https://172.17.177.11:6443
+    certificate-authority: {{ kube_config_dir }}/pki/ca.crt
+    server: https://{{ kube_primary_master_ip }}:6443
   name: kubernetes
 contexts:
 - context:
     cluster: kubernetes
-    user: system:node:node1
-  name: system:node:node1@kubernetes
-current-context: system:node:node1@kubernetes
+    user: system:node:{{ inventory_hostname }}
+  name: system:node:{{ inventory_hostname }}@kubernetes
+current-context: system:node:{{ inventory_hostname }}@kubernetes
 kind: Config
 preferences: {}
 users:
-- name: system:node:node1
+- name: system:node:{{ inventory_hostname }}
   user:
-    client-certificate: /etc/kubernetes/pki/node1.crt
-    client-key: /etc/kubernetes/pki/node1.key
+    client-certificate: {{ kube_config_dir }}/pki/{{ inventory_hostname }}.crt
+    client-key: {{ kube_config_dir }}/pki/{{ inventory_hostname }}.key

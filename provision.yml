@@ -12,6 +12,23 @@
       with_items:
         - node1
 
+# should always be localhost so that keys can later be distributed out to clusert nodes from ansible server
+- name: kube-cert authority
+  hosts: localhost
+  become: true
+  roles:
+    - kube-cert
+  tags:
+    - kube-cert
+
+- name: kube-docker config
+  hosts: kube-docker
+  become: true
+  roles:
+    - kube-docker
+  tags:
+    - kube-docker
+
 - name: kube-masters config
   hosts: kube-masters
   gather_facts: true
