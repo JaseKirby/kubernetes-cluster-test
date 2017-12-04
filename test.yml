@@ -1,0 +1,6 @@
+---
+- name: test
+  hosts: master1
+  tasks:
+    - name: print
+      debug: msg="test message"

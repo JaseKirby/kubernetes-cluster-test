@@ -1,6 +1,6 @@
 ---
 - name: copy key files and change permissions
-  hosts: manager
+  hosts: master1
   gather_facts: false
   tasks:
     - name: copy keys
@@ -14,7 +14,7 @@
 
 # should always be localhost so that keys can later be distributed out to clusert nodes from ansible server
 - name: kube-cert authority
-  hosts: localhost
+  hosts: master1
   gather_facts: false
   become: true
   roles:
