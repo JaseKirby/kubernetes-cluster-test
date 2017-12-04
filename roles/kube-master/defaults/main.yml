@@ -2,3 +2,11 @@
 kube_apiserver_count: "{{ groups['kube-masters'] | length }}"
 kube_etcd_client_port: 2379
 kube_etcd_peer_port: 2380
+kube_etcd_image: gcr.io/google_containers/etcd-amd64:3.0.17
+kube_apiserver_image: gcr.io/google_containers/kube-apiserver-amd64:v{{ kube_version }}
+kube_controller_manager_image: gcr.io/google_containers/kube-controller-manager-amd64:v{{ kube_version }}
+kube_scheduler_image: gcr.io/google_containers/kube-scheduler-amd64:v{{ kube_version }}
+kube_flannel_image: quay.io/coreos/flannel:v0.9.1-amd64
+kube_core_dns_image: coredns/coredns:0.9.10
+kube_dashboard_init_image: gcr.io/google_containers/kubernetes-dashboard-init-amd64:v1.0.1
+kube_dashboard_image: gcr.io/google_containers/kubernetes-dashboard-amd64:v1.7.1

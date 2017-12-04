@@ -33,3 +33,12 @@ kubectl get logs problem
 kubelet node labels
     node-role.kubernetes.io/master=""
     node-role.kubernetes.io/worker=""
+
+kube apiserver removed kube front proxy auth and headers
+    # - --proxy-client-cert-file=/etc/kubernetes/pki/front-proxy-client.crt
+    # - --proxy-client-key-file=/etc/kubernetes/pki/front-proxy-client.key
+    # - --requestheader-group-headers=X-Remote-Group
+    # - --requestheader-allowed-names=front-proxy-client
+    # - --requestheader-username-headers=X-Remote-User
+    # - --requestheader-extra-headers-prefix=X-Remote-Extra-
+    # - --requestheader-client-ca-file=/etc/kubernetes/pki/front-proxy-ca.crt

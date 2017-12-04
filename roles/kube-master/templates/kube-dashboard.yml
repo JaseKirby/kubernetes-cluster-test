@@ -101,13 +101,13 @@ spec:
     spec:
       initContainers:
       - name: kubernetes-dashboard-init
-        image: gcr.io/google_containers/kubernetes-dashboard-init-amd64:v1.0.1
+        image: {{ kube_dashboard_init_image }}
         volumeMounts:
         - name: kubernetes-dashboard-certs
           mountPath: /certs
       containers:
       - name: kubernetes-dashboard
-        image: gcr.io/google_containers/kubernetes-dashboard-amd64:v1.7.1
+        image: {{ kube_dashboard_image }}
         ports:
         - containerPort: 8443
           protocol: TCP

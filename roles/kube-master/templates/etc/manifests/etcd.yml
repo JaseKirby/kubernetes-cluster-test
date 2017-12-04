@@ -17,7 +17,7 @@ spec:
     - --listen-client-urls=http://127.0.0.1:2379
     - --advertise-client-urls=http://127.0.0.1:2379
     - --data-dir=/var/lib/etcd
-    image: gcr.io/google_containers/etcd-amd64:3.0.17
+    image: {{ kube_etcd_image }}
     livenessProbe:
       failureThreshold: 8
       httpGet:

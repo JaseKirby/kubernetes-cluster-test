@@ -12,3 +12,11 @@
     - sa.pub
     - apiserver-kubelet-client.key
     - apiserver-kubelet-client.crt
+
+- name: copy cluster admin user certs and keys for root user
+  copy:
+    src: "{{ kube_config_dir }}/pki/{{ item }}"
+    dest: /root/.kube/{{ item }}
+  with_items:
+    - admin.key
+    - admin.crt
