@@ -6,8 +6,12 @@
   with_items:
     - ca.key
     - ca.crt
-    - apiserver.key
-    - apiserver.csr
+    - kubernetes.key
+    - kubernetes.crt
+    - kube-controller-manager.key
+    - kube-controller-manager.crt
+    - kube-scheduler.key
+    - kube-scheduler.crt
     - sa.key
     - sa.pub
     - apiserver-kubelet-client.key

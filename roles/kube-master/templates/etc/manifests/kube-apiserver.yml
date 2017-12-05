@@ -21,6 +21,12 @@ spec:
     - --client-ca-file=/etc/kubernetes/pki/ca.crt
     - --enable-bootstrap-token-auth=true
     - --enable-swagger-ui=true
+    - --etcd-cafile=/etc/kubernetes/pki/ca.crt
+    - --etcd-certfile=/etc/kubernetes/pki/kubernetes.crt
+    - --etcd-keyfile=/etc/kubernetes/pki/kubernetes.key
+    - --etcd-servers={% for host in groups['kube-masters'] %}https://{{hostvars[host].host_ip }}:2379{% if not loop.last %},{% endif %}{% endfor %}
+
+    - --insecure-port=0
     - --kubelet-certificate-authority=/etc/kubernetes/pki/ca.crt
     - --kubelet-client-certificate=/etc/kubernetes/pki/apiserver-kubelet-client.crt
     - --kubelet-client-key=/etc/kubernetes/pki/apiserver-kubelet-client.key
@@ -28,14 +34,10 @@ spec:
     - --service-account-key-file=/etc/kubernetes/pki/sa.pub
     - --service-cluster-ip-range={{ kube_service_cluster_ip_range }}
     - --secure-port=6443
-    - --tls-cert-file=/etc/kubernetes/pki/apiserver.crt
-    - --tls-private-key-file=/etc/kubernetes/pki/apiserver.key
+    - --tls-cert-file=/etc/kubernetes/pki/kubernetes.crt
+    - --tls-private-key-file=/etc/kubernetes/pki/kubernetes.key
     - --token-auth-file={{ kube_config_dir }}/pki/token-auth.csv
-
-    # TODO loop for etcd and etcd certs set to apiserver
-    - --insecure-port=8080
-    - --etcd-servers=http://127.0.0.1:2379
-    image: gcr.io/google_containers/kube-apiserver-amd64:v1.8.2
+    image: {{ kube_apiserver_image }}
     livenessProbe:
       failureThreshold: 8
       httpGet:

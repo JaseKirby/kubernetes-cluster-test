@@ -41,14 +41,6 @@
     - kube-proxy
     - kubectl
 
-- name: sysctl route all traffic through iptables 
-  sysctl:
-    name: net.bridge.bridge-nf-call-iptables
-    value: 1
-    state: present
-    reload: yes
-    sysctl_file: "{{ kube_sysctl_file }}"
-
 - name: kubernetes kube user
   user:
     name: kube
@@ -122,17 +114,25 @@
 
 - include: docker-creds.yml
   when: kube_has_docker_reg_creds
-  
-- name: kubelet service
-  systemd:
-    name: kubelet
-    state: started
-    enabled: yes
-    daemon_reload: yes
 
-- name: kube-proxy
-  systemd:
-    name: kube-proxy
-    state: started
-    enabled: yes
-    daemon_reload: yes
+- name: sysctl route all traffic through iptables 
+  sysctl:
+    name: net.bridge.bridge-nf-call-iptables
+    value: 1
+    state: present
+    reload: yes
+    sysctl_file: "{{ kube_sysctl_file }}"
+  
+# - name: kubelet service
+#   systemd:
+#     name: kubelet
+#     state: started
+#     enabled: yes
+#     daemon_reload: yes
+
+# - name: kube-proxy
+#   systemd:
+#     name: kube-proxy
+#     state: started
+#     enabled: yes
+#     daemon_reload: yes

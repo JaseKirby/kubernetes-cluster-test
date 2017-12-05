@@ -42,3 +42,9 @@ kube apiserver removed kube front proxy auth and headers
     # - --requestheader-username-headers=X-Remote-User
     # - --requestheader-extra-headers-prefix=X-Remote-Extra-
     # - --requestheader-client-ca-file=/etc/kubernetes/pki/front-proxy-ca.crt
+
+set different read permissions for /root/.kube/admin.key
+
+flannel getting timeouts again talking to internal apiserver, this may have to do with csr.conf file
+it may be the duplicate ip in the file with the loop
+    Failed to create SubnetManager: error retrieving pod spec for 'kube-system/kube-flannel-ds-7dwck': Get https://10.77.0.1:443/api/v1/namespaces/kube-system/pods/kube-flannel-ds-7dwck: dial tcp 10.77.0.1:443: i/o timeout

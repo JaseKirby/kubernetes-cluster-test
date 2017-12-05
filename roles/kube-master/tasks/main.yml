@@ -7,7 +7,7 @@
 - name: cluster admin kubeconfig file for root user
   template:
     src: etc/admin.config.j2
-    dest: /root/.kube/admin.config
+    dest: /root/.kube/config
 
 - name: kubeconfig files
   template:

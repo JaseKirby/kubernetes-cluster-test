@@ -14,8 +14,22 @@ spec:
   - command:
     - etcd
     - --name={{ inventory_hostname }}
-    - --listen-client-urls=http://127.0.0.1:2379
-    - --advertise-client-urls=http://127.0.0.1:2379
+    - --cert-file=/etc/kubernetes/pki/kubernetes.crt
+    - --key-file=/etc/kubernetes/pki/kubernetes.key
+    - --peer-cert-file=/etc/kubernetes/pki/kubernetes.crt
+    - --peer-key-file=/etc/kubernetes/pki/kubernetes.key
+    - --trusted-ca-file=/etc/kubernetes/pki/ca.crt
+    - --peer-trusted-ca-file=/etc/kubernetes/pki/ca.crt
+    - --peer-client-cert-auth
+    - --client-cert-auth
+    - --initial-advertise-peer-urls=https://{{ host_ip }}:2380
+    - --listen-peer-urls=https://{{ host_ip }}:2380
+    - --listen-client-urls=https://{{ host_ip }}:2379,http://127.0.0.1:2379
+    - --advertise-client-urls=https://{{ host_ip }}:2379
+    - --initial-cluster-token=etcd-cluster-0
+    - --initial-cluster={% for host in groups['kube-masters'] %}{{inventory_hostname}}=https://{{hostvars[host].host_ip }}:2380{% if not loop.last %},{% endif %}{% endfor %}
+
+    - --initial-cluster-state=new
     - --data-dir=/var/lib/etcd
     image: {{ kube_etcd_image }}
     livenessProbe:
@@ -32,10 +46,17 @@ spec:
     volumeMounts:
     - mountPath: /var/lib/etcd
       name: etcd
+    - mountPath: /etc/kubernetes/pki
+      name: k8s-certs
+      readOnly: true
   hostNetwork: true
   volumes:
   - hostPath:
       path: /var/lib/etcd
       type: DirectoryOrCreate
     name: etcd
+  - hostPath:
+      path: /etc/kubernetes/pki
+      type: DirectoryOrCreate
+    name: k8s-certs
 status: {}

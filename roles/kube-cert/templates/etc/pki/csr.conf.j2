@@ -25,6 +25,9 @@ DNS.5 = kubernetes.default.svc.{{ kube_cluster_name }}
 IP.1 = {{ kube_primary_master_ip }}
 IP.2 = {{ kube_service_cluster_ip }}
 IP.3 = 127.0.0.1
+{% for host in groups['kube-masters'] %}
+IP.{{ loop.index + 3 }} = {{hostvars[host].host_ip }}
+{% endfor %}
     
 [ v3_ext ]
 authorityKeyIdentifier=keyid,issuer:always

@@ -13,7 +13,6 @@ spec:
   containers:
   - command:
     - kube-scheduler
-    - --address=127.0.0.1
     - --leader-elect=true
     - --kubeconfig=/etc/kubernetes/scheduler.config
     image: {{ kube_scheduler_image }}
@@ -34,10 +33,17 @@ spec:
     - mountPath: /etc/kubernetes/scheduler.config
       name: kubeconfig
       readOnly: true
+    - mountPath: /etc/kubernetes/pki
+      name: k8s-certs
+      readOnly: true
   hostNetwork: true
   volumes:
   - hostPath:
       path: /etc/kubernetes/scheduler.config
       type: FileOrCreate
     name: kubeconfig
+  - hostPath:
+      path: /etc/kubernetes/pki
+      type: DirectoryOrCreate
+    name: k8s-certs
 status: {}
