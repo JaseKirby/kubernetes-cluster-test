@@ -26,6 +26,7 @@
 - name: disable swap
   command: swapoff -a
   ignore_errors: yes
+  changed_when: false
 
 - name: disable selinux
   selinux:
@@ -53,6 +54,7 @@
     - "{{ kube_config_dir }}/manifests"
     - "{{ kube_config_dir }}/pki"
     - "{{ kube_config_dir }}/net"
+    - "{{ kube_config_dir }}/roles"
     - /var/lib/kubelet/pki
     - /etc/systemd/system/kubelet.service.d
     - /etc/systemd/system/kube-proxy.service.d
@@ -123,16 +125,16 @@
     reload: yes
     sysctl_file: "{{ kube_sysctl_file }}"
   
-# - name: kubelet service
-#   systemd:
-#     name: kubelet
-#     state: started
-#     enabled: yes
-#     daemon_reload: yes
+- name: kubelet service
+  systemd:
+    name: kubelet
+    state: started
+    enabled: yes
+    daemon_reload: yes
 
-# - name: kube-proxy
-#   systemd:
-#     name: kube-proxy
-#     state: started
-#     enabled: yes
-#     daemon_reload: yes
+- name: kube-proxy
+  systemd:
+    name: kube-proxy
+    state: started
+    enabled: yes
+    daemon_reload: yes

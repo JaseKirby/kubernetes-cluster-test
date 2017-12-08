@@ -45,6 +45,7 @@ kube apiserver removed kube front proxy auth and headers
 
 set different read permissions for /root/.kube/admin.key
 
-flannel getting timeouts again talking to internal apiserver, this may have to do with csr.conf file
-it may be the duplicate ip in the file with the loop
-    Failed to create SubnetManager: error retrieving pod spec for 'kube-system/kube-flannel-ds-7dwck': Get https://10.77.0.1:443/api/v1/namespaces/kube-system/pods/kube-flannel-ds-7dwck: dial tcp 10.77.0.1:443: i/o timeout
+change kubectl apply -f * commands in kube-master to ansible kube module
+
+kubelet-client cert does not have correct ip in signing also could be that I have siging backwards for inv_hostname.key and kub client
+    Error from server: Get https://172.17.177.12:10250/containerLogs/kube-system/kube-flannel-ds-fk9mh/kube-flannel: x509: cannot validate certificate for 172.17.177.12 because it doesn't contain any IP SANs

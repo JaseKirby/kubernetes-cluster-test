@@ -27,6 +27,14 @@
     - kube-controller-manager
     - kube-scheduler
 
+- name: roles files
+  copy:
+    src: kube-apiserver-kubelet-cluster-role.yml
+    dest: "{{ kube_config_dir }}/roles/{{ item }}"
+  with_items:
+    - kube-apiserver-kubelet-cluster-role.yml
+    - kube-apiserver-kubelet-cluster-rolebinding.yml
+
 - include: certs.yml
 
 - name: flannel networking deployment file
@@ -70,6 +78,10 @@
     port: 10252
     delay: 20
 
+- name: pause 1 minute to allow leader elections to take place
+  pause:
+    minutes: 1
+
 - name: kubectl apply flannel
   command: kubectl apply -f {{ kube_config_dir }}/net/flannel.yml
 
@@ -78,3 +90,10 @@
 
 - name: kubectl apply kube dashboard
   command: kubectl apply -f {{ kube_config_dir }}/kube-dashboard.yml
+
+- name: kubectl apply kube apiserver kubelet cluster role
+  command: kubectl apply -f {{ kube_config_dir }}/roles/kube-apiserver-kubelet-cluster-role.yml
+
+- name: kubectl apply kube apiserver kubelet cluster role binding
+  command: kubectl apply -f {{ kube_config_dir }}/roles/kube-apiserver-kubelet-cluster-rolebinding.yml
+  

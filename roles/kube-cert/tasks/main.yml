@@ -88,7 +88,7 @@
     creates: apiserver-kubelet-client.key
 
 - name: create kubelet client certificate signing request
-  shell: openssl req -new -key apiserver-kubelet-client.key -out apiserver-kubelet-client.csr -subj "/CN=apiserver-kubelet-client/O=system:masters"
+  shell: openssl req -new -key apiserver-kubelet-client.key -out apiserver-kubelet-client.csr -subj "/CN=kubernetes/O=system:kube-apiserver-to-kubelet"
   args:
     chdir: "{{ kube_config_dir }}/pki/"
     creates: apiserver-kubelet-client.csr
