@@ -1,0 +1,31 @@
+---
+- name: kubernetes binaries
+  copy:
+    src: /vagrant/private/repo/kubernetes/server/bin/{{ item }}
+    dest: /usr/bin/{{ item }}
+    mode: 0755
+  with_items:
+    - kubelet
+    - kube-proxy
+    - kubectl
+
+- name: cni 0.6.0 binaries
+  copy:
+    src: /vagrant/private/repo/cni-0.6.0/{{ item }}
+    dest: /opt/cni/bin/{{ item }}
+    mode: 0755
+  with_items:
+    - bridge
+    - cnitool
+    - dhcp
+    - flannel
+    - host-local
+    - ipvlan
+    - loopback
+    - macvlan
+    - noop
+    - portmap
+    - ptp
+    - sample
+    - tuning
+    - vlan

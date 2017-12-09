@@ -4,3 +4,19 @@
     name: kubelet
     state: restarted
     daemon_reload: yes
+
+- name: kubectl flannel
+  command: kubectl apply -f {{ kube_config_dir }}/net/flannel.yml
+
+- name: kubectl coreDNS
+  command: kubectl apply -f {{ kube_config_dir }}/net/core-dns.yml
+
+- name: kubectl kube-dashboard
+  command: kubectl apply -f {{ kube_config_dir }}/kube-dashboard.yml
+
+- name: kubectl kubelet role
+  command: kubectl apply -f {{ kube_config_dir }}/roles/kube-apiserver-kubelet-cluster-role.yml
+
+- name: kubectl kubelet cluster role binding
+  command: kubectl apply -f {{ kube_config_dir }}/roles/kube-apiserver-kubelet-cluster-rolebinding.yml
+  

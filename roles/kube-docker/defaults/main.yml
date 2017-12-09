@@ -1,1 +1,2 @@
 ---
+kube_docker_insecure_registries: []

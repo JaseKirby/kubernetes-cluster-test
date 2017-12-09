@@ -46,6 +46,3 @@ kube apiserver removed kube front proxy auth and headers
 set different read permissions for /root/.kube/admin.key
 
 change kubectl apply -f * commands in kube-master to ansible kube module
-
-kubelet-client cert does not have correct ip in signing also could be that I have siging backwards for inv_hostname.key and kub client
-    Error from server: Get https://172.17.177.12:10250/containerLogs/kube-system/kube-flannel-ds-fk9mh/kube-flannel: x509: cannot validate certificate for 172.17.177.12 because it doesn't contain any IP SANs

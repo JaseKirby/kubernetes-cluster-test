@@ -10,3 +10,6 @@
     name: kube-proxy
     state: restarted
     daemon_reload: yes
+
+- name: kube sysctl reload
+  command: /sbin/sysctl -p {{ kube_sysctl_file }}

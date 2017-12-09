@@ -1,0 +1,15 @@
+---
+- name: docker binaries
+  copy:
+    src: /vagrant/private/repo/docker/{{ item }}
+    dest: /usr/bin/{{ item }}
+    mode: 0755
+  with_items:
+    - docker
+    - docker-containerd
+    - docker-containerd-ctr
+    - docker-containerd-shim
+    - docker-init
+    - docker-proxy
+    - docker-runc
+    - dockerd

@@ -24,7 +24,7 @@ spec:
     - --etcd-cafile=/etc/kubernetes/pki/ca.crt
     - --etcd-certfile=/etc/kubernetes/pki/kubernetes.crt
     - --etcd-keyfile=/etc/kubernetes/pki/kubernetes.key
-    - --etcd-servers={% for host in groups['kube-masters'] %}https://{{hostvars[host].host_ip }}:2379{% if not loop.last %},{% endif %}{% endfor %}
+    - --etcd-servers={% for host in groups['kube-masters'] %}https://{{ hostvars[host].host_ip }}:2379{% if not loop.last %},{% endif %}{% endfor %}
 
     - --insecure-port=0
     - --kubelet-certificate-authority=/etc/kubernetes/pki/ca.crt

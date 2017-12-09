@@ -19,6 +19,7 @@
   copy:
     src: "{{ kube_config_dir }}/pki/{{ item }}"
     dest: /root/.kube/{{ item }}
+    mode: 0600
   with_items:
     - admin.key
     - admin.crt

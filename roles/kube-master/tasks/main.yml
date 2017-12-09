@@ -27,30 +27,42 @@
     - kube-controller-manager
     - kube-scheduler
 
-- name: roles files
-  copy:
-    src: "{{ item }}"
-    dest: "{{ kube_config_dir }}/roles/{{ item }}"
-  with_items:
-    - kube-apiserver-kubelet-cluster-role.yml
-    - kube-apiserver-kubelet-cluster-rolebinding.yml
-
 - include: certs.yml
 
 - name: flannel networking deployment file
   template:
     src: etc/net/flannel.yml
     dest: "{{ kube_config_dir }}/net/flannel.yml"
+  notify: kubectl flannel
+  when: inventory_hostname == kube_primary_master
 
 - name: core-dns deployment file
   template:
     src: etc/net/core-dns.yml
     dest: "{{ kube_config_dir }}/net/core-dns.yml"
+  notify: kubectl coreDNS
+  when: inventory_hostname == kube_primary_master
+
+- name: kubelet cluster role file
+  copy:
+    src: kube-apiserver-kubelet-cluster-role.yml
+    dest: "{{ kube_config_dir }}/roles/kube-apiserver-kubelet-cluster-role.yml"
+  notify: kubectl kubelet role
+  when: inventory_hostname == kube_primary_master
+
+- name: kubelet cluster role binding file
+  copy:
+    src: kube-apiserver-kubelet-cluster-rolebinding.yml
+    dest: "{{ kube_config_dir }}/roles/kube-apiserver-kubelet-cluster-rolebinding.yml"
+  notify: kubectl kubelet cluster role binding
+  when: inventory_hostname == kube_primary_master
 
 - name: kube-dashboard file
   template:
     src: kube-dashboard.yml
     dest: "{{ kube_config_dir }}/kube-dashboard.yml"
+  notify: kubectl kube-dashboard
+  when: inventory_hostname == kube_primary_master
 
 - name: token auth file
   template:
@@ -60,40 +72,21 @@
 - name: wait for etcd port to become responsive
   wait_for:
     port: 2379
-    delay: 20
+    delay: 10
     timeout: 700
 
 - name: wait for apiserver port to become responsive
   wait_for:
     port: 6443
-    delay: 20
 
 - name: wait for scheduler port to become responsive
   wait_for:
     port: 10251
-    delay: 20
 
 - name: wait for controller manager port to become responsive
   wait_for:
     port: 10252
-    delay: 20
 
 - name: pause 1 minute to allow leader elections to take place
   pause:
     minutes: 1
-
-- name: kubectl apply flannel
-  command: kubectl apply -f {{ kube_config_dir }}/net/flannel.yml
-
-- name: kubectl apply coreDNS
-  command: kubectl apply -f {{ kube_config_dir }}/net/core-dns.yml
-
-- name: kubectl apply kube dashboard
-  command: kubectl apply -f {{ kube_config_dir }}/kube-dashboard.yml
-
-- name: kubectl apply kube apiserver kubelet cluster role
-  command: kubectl apply -f {{ kube_config_dir }}/roles/kube-apiserver-kubelet-cluster-role.yml
-
-- name: kubectl apply kube apiserver kubelet cluster role binding
-  command: kubectl apply -f {{ kube_config_dir }}/roles/kube-apiserver-kubelet-cluster-rolebinding.yml
-  

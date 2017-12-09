@@ -1,11 +1,15 @@
 --- 
-- name: sysctl enable ipv4 forwarding
+- name: sysctl enable ipv4 forwarding, bridge call iptables, and max map count
   sysctl:
-    name: net.ipv4.ip_forward
-    value: 1
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
     state: present
-    reload: yes
     sysctl_file: "{{ kube_sysctl_file }}"
+  with_items:
+    - { name: "net.ipv4.ip_forward", value: 1 }
+    - { name: "net.bridge.bridge-nf-call-iptables", value: 1 }
+    - { name: "vm.max_map_count", value: 262144 }
+  notify: kube sysctl reload
 
 - name: net-tools
   yum:
@@ -32,16 +36,6 @@
   selinux:
     state: disabled
 
-- name: kubernetes binaries
-  copy:
-    src: /vagrant/private/repo/kubernetes/server/bin/{{ item }}
-    dest: /usr/bin/{{ item }}
-    mode: 0755
-  with_items:
-    - kubelet
-    - kube-proxy
-    - kubectl
-
 - name: kubernetes kube user
   user:
     name: kube
@@ -60,6 +54,8 @@
     - /etc/systemd/system/kube-proxy.service.d
     - /etc/cni/net.d
     - /opt/cni/bin
+
+- include: get-bin.yml
 
 - include: certs.yml
 
@@ -93,37 +89,8 @@
     src: etc/proxy.config.j2
     dest: "{{ kube_config_dir }}/proxy.config"
 
-- name: cni 0.6.0 binaries
-  copy:
-    src: private/repo/cni-0.6.0/{{ item }}
-    dest: /opt/cni/bin/{{ item }}
-    mode: 0755
-  with_items:
-    - bridge
-    - cnitool
-    - dhcp
-    - flannel
-    - host-local
-    - ipvlan
-    - loopback
-    - macvlan
-    - noop
-    - portmap
-    - ptp
-    - sample
-    - tuning
-    - vlan
-
 - include: docker-creds.yml
   when: kube_has_docker_reg_creds
-
-- name: sysctl route all traffic through iptables 
-  sysctl:
-    name: net.bridge.bridge-nf-call-iptables
-    value: 1
-    state: present
-    reload: yes
-    sysctl_file: "{{ kube_sysctl_file }}"
   
 - name: kubelet service
   systemd:
