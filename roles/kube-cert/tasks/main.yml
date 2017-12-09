@@ -28,7 +28,7 @@
     dest: "{{ kube_config_dir }}/pki/csr.conf"
 
 - name: apiserver certificate signing request kubernetes.csr
-  shell: openssl req -new -key kubernetes.key -subj "/CN={{ kube_primary_master_ip }}" -out kubernetes.csr 
+  shell: openssl req -new -key kubernetes.key-out kubernetes.csr 
   args:
     chdir: "{{ kube_config_dir }}/pki/"
     creates: kubernetes.csr
@@ -81,24 +81,6 @@
     chdir: "{{ kube_config_dir }}/pki/"
     creates: sa.key
 
-- name: kubelet client private key apiserver-kubelet-client.key
-  shell: openssl genrsa -out apiserver-kubelet-client.key 2048
-  args:
-    chdir: "{{ kube_config_dir }}/pki/"
-    creates: apiserver-kubelet-client.key
-
-- name: create kubelet client certificate signing request
-  shell: openssl req -new -key apiserver-kubelet-client.key -out apiserver-kubelet-client.csr -subj "/CN=kubernetes/O=system:kube-apiserver-to-kubelet"
-  args:
-    chdir: "{{ kube_config_dir }}/pki/"
-    creates: apiserver-kubelet-client.csr
-
-- name: kubelet client certificate signing by authority apiserver-kubelet-client.crt
-  shell: openssl x509 -req -in apiserver-kubelet-client.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out apiserver-kubelet-client.crt -days {{ kube_cert_expires_in_days }}
-  args:
-    chdir: "{{ kube_config_dir }}/pki/"
-    creates: apiserver-kubelet-client.crt
-
 - name: kube-proxy private key proxy.key
   shell: openssl genrsa -out proxy.key 2048
   args:
@@ -124,15 +106,21 @@
     creates: "{{ item }}.key"
   with_items: "{{ groups['kube-nodes'] }}"
 
+- name: kubelet node csr config file
+  template:
+    src: etc/pki/node-csr.conf.j2
+    dest: "{{ kube_config_dir }}/pki/{{ item }}-csr.conf"
+  with_items: "{{ groups['kube-nodes'] }}"
+
 - name: create kubelet node certificate signing request
-  shell: openssl req -new -key {{ item }}.key -out {{ item }}.csr -subj "/CN=system:node:{{ item }}/O=system:nodes"
+  shell: openssl req -new -key {{ item }}.key -out {{ item }}.csr
   args:
     chdir: "{{ kube_config_dir }}/pki/"
     creates: "{{ item }}.csr"
   with_items: "{{ groups['kube-nodes'] }}"
 
-- name: kubelet node certificate signing by authority proxy.crt
-  shell: openssl x509 -req -in {{ item }}.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out {{ item }}.crt -days {{ kube_cert_expires_in_days }}
+- name: kubelet node certificate signing by authority
+  shell: openssl x509 -req -in {{ item }}.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out {{ item }}.crt -days {{ kube_cert_expires_in_days }} -extensions v3_ext -extfile {{ item }}-csr.conf
   args:
     chdir: "{{ kube_config_dir }}/pki/"
     creates: "{{ item }}.crt"
@@ -145,15 +133,21 @@
     creates: "{{ item }}.key"
   with_items: "{{ groups['kube-masters'] }}"
 
+- name: kubelet master node csr config file
+  template:
+    src: etc/pki/node-csr.conf.j2
+    dest: "{{ kube_config_dir }}/pki/{{ item }}-csr.conf"
+  with_items: "{{ groups['kube-masters'] }}"
+
 - name: create kubelet master node certificate signing request
-  shell: openssl req -new -key {{ item }}.key -out {{ item }}.csr -subj "/CN=system:node:{{ item }}/O=system:nodes"
+  shell: openssl req -new -key {{ item }}.key -out {{ item }}.csr
   args:
     chdir: "{{ kube_config_dir }}/pki/"
     creates: "{{ item }}.csr"
   with_items: "{{ groups['kube-masters'] }}"
 
-- name: kubelet master node certificate signing by authority proxy.crt
-  shell: openssl x509 -req -in {{ item }}.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out {{ item }}.crt -days {{ kube_cert_expires_in_days }}
+- name: kubelet master node certificate signing by authority
+  shell: openssl x509 -req -in {{ item }}.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out {{ item }}.crt -days {{ kube_cert_expires_in_days }} -extensions v3_ext -extfile {{ item }}-csr.conf
   args:
     chdir: "{{ kube_config_dir }}/pki/"
     creates: "{{ item }}.crt"

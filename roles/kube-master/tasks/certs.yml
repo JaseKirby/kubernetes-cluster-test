@@ -14,8 +14,6 @@
     - kube-scheduler.crt
     - sa.key
     - sa.pub
-    - apiserver-kubelet-client.key
-    - apiserver-kubelet-client.crt
 
 - name: copy cluster admin user certs and keys for root user
   copy:

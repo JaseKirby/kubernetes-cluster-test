@@ -17,7 +17,5 @@
     - "{{ inventory_hostname }}.key"
     - "{{ inventory_hostname }}.crt"
     - ca.crt
-    - apiserver-kubelet-client.key
-    - apiserver-kubelet-client.crt
     - proxy.key
     - proxy.crt

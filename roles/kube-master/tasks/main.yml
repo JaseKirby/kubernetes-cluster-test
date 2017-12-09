@@ -29,7 +29,7 @@
 
 - name: roles files
   copy:
-    src: kube-apiserver-kubelet-cluster-role.yml
+    src: "{{ item }}"
     dest: "{{ kube_config_dir }}/roles/{{ item }}"
   with_items:
     - kube-apiserver-kubelet-cluster-role.yml

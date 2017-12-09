@@ -28,8 +28,8 @@ spec:
 
     - --insecure-port=0
     - --kubelet-certificate-authority=/etc/kubernetes/pki/ca.crt
-    - --kubelet-client-certificate=/etc/kubernetes/pki/apiserver-kubelet-client.crt
-    - --kubelet-client-key=/etc/kubernetes/pki/apiserver-kubelet-client.key
+    - --kubelet-client-certificate=/etc/kubernetes/pki/kubernetes.crt
+    - --kubelet-client-key=/etc/kubernetes/pki/kubernetes.key
     - --kubelet-preferred-address-types=InternalIP,ExternalIP,Hostname
     - --service-account-key-file=/etc/kubernetes/pki/sa.pub
     - --service-cluster-ip-range={{ kube_service_cluster_ip_range }}
