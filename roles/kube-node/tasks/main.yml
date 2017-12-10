@@ -64,31 +64,37 @@
   template:
     src: systemd/kubelet.service.j2
     dest: /etc/systemd/system/kubelet.service
+  notify: kubelet restart
 
 - name: kubelet systemd environment file
   template:
     src: systemd/kubelet.conf.j2
     dest: /etc/systemd/system/kubelet.service.d/kubelet.conf
+  notify: kubelet restart
 
 - name: kubelet kubeconfig file
   template:
     src: etc/kubelet.config.j2
     dest: "{{ kube_config_dir }}/kubelet.config"
+  notify: kubelet restart
 
 - name: kube-proxy systemd service file
   template:
     src: systemd/kube-proxy.service.j2
     dest: /etc/systemd/system/kube-proxy.service
+  notify: kube-proxy restart
 
 - name: kube-proxy systemd environment file
   template:
     src: systemd/kube-proxy.conf.j2
     dest: /etc/systemd/system/kube-proxy.service.d/kube-proxy.conf
+  notify: kube-proxy restart
 
 - name: kube-proxy kubeconfig file
   template:
     src: etc/proxy.config.j2
     dest: "{{ kube_config_dir }}/proxy.config"
+  notify: kube-proxy restart
 
 - include: docker-creds.yml
   when: kube_has_docker_reg_creds
