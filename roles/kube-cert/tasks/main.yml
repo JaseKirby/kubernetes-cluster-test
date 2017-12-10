@@ -28,7 +28,7 @@
     dest: "{{ kube_config_dir }}/pki/csr.conf"
 
 - name: apiserver certificate signing request kubernetes.csr
-  shell: openssl req -new -key kubernetes.key-out kubernetes.csr 
+  shell: openssl req -new -key kubernetes.key -out kubernetes.csr -subj "/CN=kubernetes"
   args:
     chdir: "{{ kube_config_dir }}/pki/"
     creates: kubernetes.csr
@@ -113,7 +113,7 @@
   with_items: "{{ groups['kube-nodes'] }}"
 
 - name: create kubelet node certificate signing request
-  shell: openssl req -new -key {{ item }}.key -out {{ item }}.csr
+  shell: openssl req -new -key {{ item }}.key -out {{ item }}.csr -subj "/CN=system:node:{{ item }}/O=system:nodes"
   args:
     chdir: "{{ kube_config_dir }}/pki/"
     creates: "{{ item }}.csr"
@@ -140,7 +140,7 @@
   with_items: "{{ groups['kube-masters'] }}"
 
 - name: create kubelet master node certificate signing request
-  shell: openssl req -new -key {{ item }}.key -out {{ item }}.csr
+  shell: openssl req -new -key {{ item }}.key -out {{ item }}.csr -subj "/CN=system:node:{{ item }}/O=system:nodes"
   args:
     chdir: "{{ kube_config_dir }}/pki/"
     creates: "{{ item }}.csr"

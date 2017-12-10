@@ -68,6 +68,7 @@
   template:
     src: token-auth.csv
     dest: "{{ kube_config_dir }}/pki/token-auth.csv"
+  when: inventory_hostname == kube_primary_master
 
 - name: wait for etcd port to become responsive
   wait_for:
