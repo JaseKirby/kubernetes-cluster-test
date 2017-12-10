@@ -45,4 +45,12 @@ kube apiserver removed kube front proxy auth and headers
 
 set different read permissions for /root/.kube/admin.key
 
-change kubectl apply -f * commands in kube-master to ansible kube module
+do this commmand for all nodes that need to run fluentd
+    kubectl label nodes master1 beta.kubernetes.io/fluentd-ds-ready=true
+
+need to clean up fluentd config map
+
+error when trying to access kibana
+    is forbidden: User \"system:anonymous\" cannot get services/proxy in the namespace \"kube-system\
+
+not enough memory to run efk stack

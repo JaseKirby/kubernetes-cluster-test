@@ -10,3 +10,6 @@ kube_flannel_image: quay.io/coreos/flannel:v0.9.1-amd64
 kube_core_dns_image: coredns/coredns:0.9.10
 kube_dashboard_init_image: gcr.io/google_containers/kubernetes-dashboard-init-amd64:v1.0.1
 kube_dashboard_image: gcr.io/google_containers/kubernetes-dashboard-amd64:v1.7.1
+kube_elasticsearch_image: gcr.io/google-containers/elasticsearch:v5.6.4
+kube_fluentd_elasticsearch_image: gcr.io/google-containers/fluentd-elasticsearch:v2.0.2
+kube_kibana_image: docker.elastic.co/kibana/kibana:5.6.4

@@ -49,6 +49,7 @@
     - "{{ kube_config_dir }}/pki"
     - "{{ kube_config_dir }}/net"
     - "{{ kube_config_dir }}/roles"
+    - "{{ kube_config_dir }}/logging"
     - /var/lib/kubelet/pki
     - /etc/systemd/system/kubelet.service.d
     - /etc/systemd/system/kube-proxy.service.d
