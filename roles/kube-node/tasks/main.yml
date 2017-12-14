@@ -16,9 +16,9 @@
     name: net-tools
     state: present
 
-- name: conntrack
+- name: conntrack-tools
   yum:
-    name: conntrack
+    name: conntrack-tools
     state: present
 
 - name: remove swapfile from /etc/fstab

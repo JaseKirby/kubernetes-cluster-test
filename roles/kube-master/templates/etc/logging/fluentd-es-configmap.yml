@@ -269,29 +269,12 @@ data:
       tag cluster-autoscaler
     </source>
 
-    # Logs from systemd-journal for interesting services.
-    <source>
-      type systemd
-      filters [{ "_SYSTEMD_UNIT": "docker.service" }]
-      pos_file /var/log/gcp-journald-docker.pos
-      read_from_head true
-      tag docker
-    </source>
-
     <source>
       type systemd
       filters [{ "_SYSTEMD_UNIT": "kubelet.service" }]
       pos_file /var/log/gcp-journald-kubelet.pos
       read_from_head true
       tag kubelet
-    </source>
-
-    <source>
-      type systemd
-      filters [{ "_SYSTEMD_UNIT": "node-problem-detector.service" }]
-      pos_file /var/log/gcp-journald-node-problem-detector.pos
-      read_from_head true
-      tag node-problem-detector
     </source>
   forward.input.conf: |-
     # Takes the messages sent over TCP

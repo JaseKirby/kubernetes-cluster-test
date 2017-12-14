@@ -52,5 +52,7 @@ need to clean up fluentd config map
 
 error when trying to access kibana
     is forbidden: User \"system:anonymous\" cannot get services/proxy in the namespace \"kube-system\
+after setting node port and removing kibana base url env var
+    http://172.17.177.12:30001/app/kibana#/discover?_g=()
 
 not enough memory to run efk stack

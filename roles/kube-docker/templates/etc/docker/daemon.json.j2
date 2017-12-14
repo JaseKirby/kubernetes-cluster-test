@@ -1,6 +1,8 @@
 {
+    "bridge": "none",
     "graph": "{{ kube_docker_data_root }}",
     "insecure-registries": {{ kube_docker_insecure_registries | to_json }},
+    "iptables": false,
     "log-driver": "json-file",
     "log-opts": {
         "max-size": "{{ kube_docker_max_log_file_size }}"
