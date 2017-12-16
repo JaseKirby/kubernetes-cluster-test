@@ -19,4 +19,9 @@
 
 - name: kubectl kubelet cluster role binding
   command: kubectl apply -f {{ kube_config_dir }}/roles/kube-apiserver-kubelet-cluster-rolebinding.yml
+
+- name: kubectl ingress-ns
+  command: kubectl apply -f {{ kube_config_dir }}/ingress/ingress-nginx-ns.yml
   
+- name: kubectl ingress
+  command: kubectl apply -f {{ kube_config_dir }}/ingress/
