@@ -56,3 +56,13 @@ after setting node port and removing kibana base url env var
     http://172.17.177.12:30001/app/kibana#/discover?_g=()
 
 not enough memory to run efk stack
+
+prove nginx-ingress works
+    install dnsmasq
+        yum install dnsmasq
+    add the follwing line to end of /etc/dnsmasq.conf or put in file in dnsmasq.d
+        address=/kube.example.com/127.0.0.1
+    start local dns server
+        systemctl start dnsmasq
+    test
+        curl http://ngapp.kube.example.com:30080

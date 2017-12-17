@@ -2,42 +2,88 @@
 apiVersion: apps/v1beta1
 kind: Deployment
 metadata:
-  name: my-nginx
+  name: ng
 spec:
-  replicas: 2
+  replicas: 1
   template:
     metadata:
       labels:
-        run: my-nginx
+        run: ng
     spec:
       containers:
-      - name: my-nginx
-        image: nginx
+      - name: ng
+        image: nginx:alpine
         ports:
         - containerPort: 80
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: my-nginx
+  name: ng
   labels:
-    run: my-nginx
+    run: ng
 spec:
   ports:
   - port: 80
     protocol: TCP
   selector:
-    run: my-nginx
+    run: ng
 ---
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: my-ingress
+  name: ng
 spec:
   rules:
-  - host: kube.example.com
+  - host: ng.kube.example.com
     http:
       paths:
       - backend:
-          serviceName: my-nginx
+          serviceName: ng
+          servicePort: 80
+
+
+
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: httpd
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        run: httpd
+    spec:
+      containers:
+      - name: httpd
+        image: httpd:alpine
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: httpd
+  labels:
+    run: httpd
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+  selector:
+    run: httpd
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: httpd
+spec:
+  rules:
+  - host: httpd.kube.example.com
+    http:
+      paths:
+      - backend:
+          serviceName: httpd
           servicePort: 80
