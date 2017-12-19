@@ -13,3 +13,5 @@ kube_sysctl_file: /etc/sysctl.d/98-kube.conf
 kube_docker_registry: gcr.io
 kube_has_docker_reg_creds: false
 kube_pod_infra_container_image: "{{ kube_docker_registry }}/google_containers/pause-amd64:3.0"
+kube_node_labels: []
+kube_remove_node_labels: []

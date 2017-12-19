@@ -66,3 +66,6 @@ prove nginx-ingress works
         systemctl start dnsmasq
     test
         curl http://ngapp.kube.example.com:30080
+
+still a bug in sysctl values in kube-node
+    a certain amount of time needs to pass after ipv4 forward to put  in bridge call iptables

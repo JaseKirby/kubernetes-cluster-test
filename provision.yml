@@ -31,15 +31,6 @@
   tags:
     - kube-docker
 
-- name: kube-masters config
-  hosts: kube-masters
-  gather_facts: false
-  become: true
-  roles:
-    - kube-master
-  tags:
-    - kube-master
-
 - name: kube-nodes config
   hosts: kube-nodes
   gather_facts: false
@@ -48,4 +39,12 @@
     - kube-node
   tags:
     - kube-node
-    
+
+- name: kube-masters config
+  hosts: kube-masters
+  gather_facts: false
+  become: true
+  roles:
+    - kube-master
+  tags:
+    - kube-master

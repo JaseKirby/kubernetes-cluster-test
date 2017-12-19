@@ -1,0 +1,12 @@
+---
+- name: apply labels for node on kube primary master
+  command: kubectl label nodes {{ inventory_hostname }} {{ item }} --overwrite
+  with_items: "{{ kube_node_labels }}"
+  changed_when: false
+  when: inventory_hostname == kube_primary_master
+
+- name: remove labels for node on kube primary master
+  command: kubectl label nodes {{ inventory_hostname }} {{ item }}
+  with_items: "{{ kube_remove_node_labels }}"
+  changed_when: false
+  when: inventory_hostname == kube_primary_master

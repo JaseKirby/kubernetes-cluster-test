@@ -149,3 +149,5 @@
 - name: pause 1 minute to allow leader elections to take place
   pause:
     minutes: 1
+
+- include: labels.yml
