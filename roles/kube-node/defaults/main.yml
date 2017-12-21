@@ -1,4 +1,5 @@
 ---
+kube_env_name: default
 kube_version: 1.8.2
 kube_primary_master: "{{ groups['kube-masters'][0] }}"
 kube_primary_master_ip: "{{ hostvars[kube_primary_master]['host_ip'] }}"  # ovverride with VIP for manager machines with multi manager setup
@@ -13,5 +14,6 @@ kube_sysctl_file: /etc/sysctl.d/98-kube.conf
 kube_docker_registry: gcr.io
 kube_has_docker_reg_creds: false
 kube_pod_infra_container_image: "{{ kube_docker_registry }}/google_containers/pause-amd64:3.0"
-kube_node_labels: []
+kube_node_labels:
+    - node-role.kubernetes.io/worker=""
 kube_remove_node_labels: []

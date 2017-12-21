@@ -151,4 +151,7 @@
   pause:
     minutes: 1
 
-# - include: labels.yml
+- name: apply labels for  this master node
+  command: kubectl label nodes {{ inventory_hostname }} {{ item }} --overwrite
+  with_items: "{{ kube_master_labels }}"
+  changed_when: false

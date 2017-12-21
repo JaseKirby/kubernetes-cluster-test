@@ -1,20 +1,22 @@
 ---
 - name: copy key from cert authority
   copy:
-    src: "{{ kube_config_dir }}/pki/{{ inventory_hostname }}.key"
+    src: "{{ kube_config_dir }}/pki/{{ kube_env_name }}/{{ inventory_hostname }}.key"
     dest: "{{ kube_config_dir }}/pki/{{ inventory_hostname }}.key"
-    mode: 600
+    mode: 0600
 
 - name: copy crt from cert authority
   copy:
-    src: "{{ kube_config_dir }}/pki/{{ inventory_hostname }}.crt"
+    src: "{{ kube_config_dir }}/pki/{{ kube_env_name }}/{{ inventory_hostname }}.crt"
     dest: "{{ kube_config_dir }}/pki/{{ inventory_hostname }}.crt"
+    mode: 0600
 
 - name: copy certs and keys
   copy:
-    src: "{{ kube_config_dir }}/pki/{{ item }}"
-    dest: "{{ kube_config_dir }}/pki/{{ item }}"
+    src: "{{ kube_config_dir }}/pki/{{ kube_env_name }}/{{ item.name }}"
+    dest: "{{ kube_config_dir }}/pki/{{ item.name }}"
+    mode: "{{ item.mode }}"
   with_items:
-    - ca.crt
-    - proxy.key
-    - proxy.crt
+    - { name: "ca.crt", mode: "0644" }
+    - { name: "proxy.key", mode: "0600" }
+    - { name: "proxy.crt", mode: "0644" }

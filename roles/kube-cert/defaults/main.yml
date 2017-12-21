@@ -1,8 +1,10 @@
 ---
+kube_env_name: default
 kube_primary_master: "{{ groups['kube-masters'][0] }}"
 kube_primary_master_ip: "{{ hostvars[kube_primary_master]['host_ip'] }}"  # ovverride with VIP for manager machines with multi manager setup
 kube_service_cluster_ip: "10.77.0.1"
 kube_config_dir: /etc/kubernetes
+kube_cert_dir: "{{ kube_config_dir }}/pki/{{ kube_env_name }}"
 kube_cluster_short_name: cluster
 kube_cluster_name: cluster.local
 kube_csr_country: US

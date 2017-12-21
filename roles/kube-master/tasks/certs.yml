@@ -1,26 +1,26 @@
 ---
 - name: copy keys and certs
   copy:
-    src: "{{ kube_config_dir}}/pki/{{ item.name }}"
+    src: "{{ kube_config_dir}}/pki/{{ kube_env_name }}/{{ item.name }}"
     dest: "{{ kube_config_dir }}/pki/{{ item.name }}"
     mode: "{{ item.mode }}"
   with_items:
-    - { name: "ca.key", mode: 600 }
-    - { name: "ca.crt", mode: 644 }
-    - { name: "kubernetes.key", mode: 600 }
-    - { name: "kubernetes.crt", mode: 644 }
-    - { name: "kube-controller-manager.key", mode: 600 }
-    - { name: "kube-controller-manager.crt", mode: 644 }
-    - { name: "kube-scheduler.key", mode: 644 }
-    - { name: "kube-scheduler.crt", mode: 644 }
-    - { name: "sa.key", mode: 600 }
-    - { name: "sa.pub", mode: 644 }
+    - { name: "ca.key", mode: "0600" }
+    - { name: "ca.crt", mode: "0644" }
+    - { name: "kubernetes.key", mode: "0600" }
+    - { name: "kubernetes.crt", mode: "0644" }
+    - { name: "kube-controller-manager.key", mode: "0600" }
+    - { name: "kube-controller-manager.crt", mode: "0644" }
+    - { name: "kube-scheduler.key", mode: "0600" }
+    - { name: "kube-scheduler.crt", mode: "0644" }
+    - { name: "sa.key", mode: "0600" }
+    - { name: "sa.pub", mode: "0644" }
 
 - name: copy cluster admin user certs and keys for root user
   copy:
-    src: "{{ kube_config_dir }}/pki/{{ item }}"
+    src: "{{ kube_config_dir }}/pki/{{ kube_env_name }}/{{ item }}"
     dest: /root/.kube/{{ item }}
-    mode: 600
+    mode: 0600
   with_items:
     - admin.key
     - admin.crt

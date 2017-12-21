@@ -113,3 +113,10 @@
     state: started
     enabled: yes
     daemon_reload: yes
+
+- name: apply labels for node on kube primary master
+  command: kubectl label nodes {{ inventory_hostname }} {{ item }} --overwrite
+  with_items: "{{ kube_node_labels }}"
+  changed_when: false
+  delegate_to: kube_primary_master
+  when: "'kube-masters' not in group_names"

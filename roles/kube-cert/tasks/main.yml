@@ -1,173 +1,173 @@
 ---
 - name: create kubernetes key directory
   file:
-    path: "{{ kube_config_dir }}/pki"
+    path: "{{ kube_cert_dir }}"
     state: directory
 
 - name: certificate authority private key
   shell: openssl genrsa -out ca.key 2048
   args:
-    chdir: "{{ kube_config_dir }}/pki/"
+    chdir: "{{ kube_cert_dir }}"
     creates: ca.key
 
 - name: certificate authority public cert ca.crt
   shell: openssl req -x509 -new -nodes -key ca.key -subj "/CN={{ kube_primary_master_ip }}" -days {{  kube_cert_expires_in_days }} -out ca.crt
   args:
-    chdir: "{{ kube_config_dir }}/pki/"
+    chdir: "{{ kube_cert_dir }}"
     creates: ca.crt
 
 - name: kubernetes private key kubernetes.key
   shell: openssl genrsa -out kubernetes.key 2048
   args:
-    chdir: "{{ kube_config_dir }}/pki/"
+    chdir: "{{ kube_cert_dir }}"
     creates: kubernetes.key
 
 - name: certificate signing config file csr.conf
   template:
     src: etc/pki/csr.conf.j2
-    dest: "{{ kube_config_dir }}/pki/csr.conf"
+    dest: "{{ kube_cert_dir }}/csr.conf"
 
 - name: apiserver certificate signing request kubernetes.csr
   shell: openssl req -new -key kubernetes.key -out kubernetes.csr -subj "/CN=kubernetes"
   args:
-    chdir: "{{ kube_config_dir }}/pki/"
+    chdir: "{{ kube_cert_dir }}"
     creates: kubernetes.csr
 
 - name: kubernetes certficate generation from certificate authority
   shell: openssl x509 -req -in kubernetes.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out kubernetes.crt -days {{ kube_cert_expires_in_days }} -extensions v3_ext -extfile csr.conf
   args:
-    chdir: "{{ kube_config_dir }}/pki/"
+    chdir: "{{ kube_cert_dir }}"
     creates: kubernetes.crt
 
 - name: kube-controller-manager private key
   shell: openssl genrsa -out kube-controller-manager.key 2048
   args:
-    chdir: "{{ kube_config_dir }}/pki/"
+    chdir: "{{ kube_cert_dir }}"
     creates: kube-controller-manager.key
 
 - name: create kube-controller-manager certificate signing request
   shell: openssl req -new -key kube-controller-manager.key -out kube-controller-manager.csr -subj "/CN=system:kube-controller-manager/O=system:kube-controller-manager"
   args:
-    chdir: "{{ kube_config_dir }}/pki/"
+    chdir: "{{ kube_cert_dir }}"
     creates: kube-controller-manager.csr
 
 - name: kube-controller-manager client certificate signing by authority kube-controller-manager.crt
   shell: openssl x509 -req -in kube-controller-manager.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out kube-controller-manager.crt -days {{ kube_cert_expires_in_days }}
   args:
-    chdir: "{{ kube_config_dir }}/pki/"
+    chdir: "{{ kube_cert_dir }}"
     creates: kube-controller-manager.crt
 
 - name: kube-scheduler private key
   shell: openssl genrsa -out kube-scheduler.key 2048
   args:
-    chdir: "{{ kube_config_dir }}/pki/"
+    chdir: "{{ kube_cert_dir }}"
     creates: kube-scheduler.key
 
 - name: create kube-scheduler certificate signing request
   shell: openssl req -new -key kube-scheduler.key -out kube-scheduler.csr -subj "/CN=system:kube-scheduler/O=system:kube-scheduler"
   args:
-    chdir: "{{ kube_config_dir }}/pki/"
+    chdir: "{{ kube_cert_dir }}"
     creates: kube-scheduler.csr
 
 - name: kube-scheduler client certificate signing by authority kube-scheduler.crt
   shell: openssl x509 -req -in kube-scheduler.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out kube-scheduler.crt -days {{ kube_cert_expires_in_days }}
   args:
-    chdir: "{{ kube_config_dir }}/pki/"
+    chdir: "{{ kube_cert_dir }}"
     creates: kube-scheduler.crt
 
 - name: create service account key pair
   shell: openssl req -newkey rsa:2048 -nodes -keyout sa.key -x509 -days {{ kube_cert_expires_in_days }} -out sa.pub -subj "/CN=service-account/O=service-account"
   args:
-    chdir: "{{ kube_config_dir }}/pki/"
+    chdir: "{{ kube_cert_dir }}"
     creates: sa.key
 
 - name: kube-proxy private key proxy.key
   shell: openssl genrsa -out proxy.key 2048
   args:
-    chdir: "{{ kube_config_dir }}/pki/"
+    chdir: "{{ kube_cert_dir }}"
     creates: proxy.key
 
 - name: create kube-proxy certificate signing request proxy.csr
   shell: openssl req -new -key proxy.key -out proxy.csr -subj "/CN=system:kube-proxy/O=system:node-proxier"
   args:
-    chdir: "{{ kube_config_dir }}/pki/"
+    chdir: "{{ kube_cert_dir }}"
     creates: proxy.csr
 
 - name: kube-proxy certificate signing by authority proxy.crt
   shell: openssl x509 -req -in proxy.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out proxy.crt -days {{ kube_cert_expires_in_days }}
   args:
-    chdir: "{{ kube_config_dir }}/pki/"
+    chdir: "{{ kube_cert_dir }}"
     creates: proxy.crt
 
 - name: kubelet node private key
   shell: openssl genrsa -out {{ item }}.key 2048
   args:
-    chdir: "{{ kube_config_dir }}/pki/"
+    chdir: "{{ kube_cert_dir }}"
     creates: "{{ item }}.key"
   with_items: "{{ groups['kube-nodes'] }}"
 
 - name: kubelet node csr config file
   template:
     src: etc/pki/node-csr.conf.j2
-    dest: "{{ kube_config_dir }}/pki/{{ item }}-csr.conf"
+    dest: "{{ kube_cert_dir }}/{{ item }}-csr.conf"
   with_items: "{{ groups['kube-nodes'] }}"
 
 - name: create kubelet node certificate signing request
   shell: openssl req -new -key {{ item }}.key -out {{ item }}.csr -subj "/CN=system:node:{{ item }}/O=system:nodes"
   args:
-    chdir: "{{ kube_config_dir }}/pki/"
+    chdir: "{{ kube_cert_dir }}"
     creates: "{{ item }}.csr"
   with_items: "{{ groups['kube-nodes'] }}"
 
 - name: kubelet node certificate signing by authority
   shell: openssl x509 -req -in {{ item }}.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out {{ item }}.crt -days {{ kube_cert_expires_in_days }} -extensions v3_ext -extfile {{ item }}-csr.conf
   args:
-    chdir: "{{ kube_config_dir }}/pki/"
+    chdir: "{{ kube_cert_dir }}"
     creates: "{{ item }}.crt"
   with_items: "{{ groups['kube-nodes'] }}"
 
 - name: kubelet master node private key
   shell: openssl genrsa -out {{ item }}.key 2048
   args:
-    chdir: "{{ kube_config_dir }}/pki/"
+    chdir: "{{ kube_cert_dir }}"
     creates: "{{ item }}.key"
   with_items: "{{ groups['kube-masters'] }}"
 
 - name: kubelet master node csr config file
   template:
     src: etc/pki/node-csr.conf.j2
-    dest: "{{ kube_config_dir }}/pki/{{ item }}-csr.conf"
+    dest: "{{ kube_cert_dir }}/{{ item }}-csr.conf"
   with_items: "{{ groups['kube-masters'] }}"
 
 - name: create kubelet master node certificate signing request
   shell: openssl req -new -key {{ item }}.key -out {{ item }}.csr -subj "/CN=system:node:{{ item }}/O=system:nodes"
   args:
-    chdir: "{{ kube_config_dir }}/pki/"
+    chdir: "{{ kube_cert_dir }}"
     creates: "{{ item }}.csr"
   with_items: "{{ groups['kube-masters'] }}"
 
 - name: kubelet master node certificate signing by authority
   shell: openssl x509 -req -in {{ item }}.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out {{ item }}.crt -days {{ kube_cert_expires_in_days }} -extensions v3_ext -extfile {{ item }}-csr.conf
   args:
-    chdir: "{{ kube_config_dir }}/pki/"
+    chdir: "{{ kube_cert_dir }}"
     creates: "{{ item }}.crt"
   with_items: "{{ groups['kube-masters'] }}"
 
 - name: cluster admin private key admin.key
   shell: openssl genrsa -out admin.key 2048
   args:
-    chdir: "{{ kube_config_dir }}/pki/"
+    chdir: "{{ kube_cert_dir }}"
     creates: admin.key
 
 - name: cluster admin certificate signing request admin.csr
   shell: openssl req -new -key admin.key -out admin.csr -subj "/CN=cluster-admin/O=system:masters"
   args:
-    chdir: "{{ kube_config_dir }}/pki/"
+    chdir: "{{ kube_cert_dir }}"
     creates: admin.csr
 
 - name: cluster admin certificate signing by authority admin.crt
   shell: openssl x509 -req -in admin.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out admin.crt -days {{ kube_cert_expires_in_days }}
   args:
-    chdir: "{{ kube_config_dir }}/pki/"
+    chdir: "{{ kube_cert_dir }}"
     creates: admin.crt
     
