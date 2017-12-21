@@ -1,4 +1,4 @@
---- 
+---
 - name: sysctl enable ipv4 forwarding, bridge call iptables, and max map count
   sysctl:
     name: "{{ item.name }}"
@@ -8,8 +8,8 @@
   with_items:
     - { name: "net.ipv4.ip_forward", value: 1 }
     - { name: "net.bridge.bridge-nf-call-iptables", value: 1 }
-    - { name: "vm.max_map_count", value: 262144 }
   notify: kube sysctl reload
+  ignore_errors: true
 
 - name: net-tools
   yum:

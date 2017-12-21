@@ -62,7 +62,8 @@
     src: kube-dashboard.yml
     dest: "{{ kube_config_dir }}/kube-dashboard.yml"
   notify: kubectl kube-dashboard
-  when: inventory_hostname == kube_primary_master
+  when: inventory_hostname == kube_primary_master and kube_dashboard_install
+  tags: kubedash
 
 - name: token auth file
   template:
@@ -150,4 +151,4 @@
   pause:
     minutes: 1
 
-- include: labels.yml
+# - include: labels.yml

@@ -57,6 +57,9 @@ after setting node port and removing kibana base url env var
 
 not enough memory to run efk stack
 
+elasticsearch mandatory sysctl entry
+    vm.max_map_count=262144
+
 prove nginx-ingress works
     install dnsmasq
         yum install dnsmasq

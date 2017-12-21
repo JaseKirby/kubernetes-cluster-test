@@ -1,12 +1,19 @@
-master1 ansible_connection=local host_ip=172.17.177.11
-node1 host_ip=172.17.177.12 ansible_ssh_host=172.17.177.12 ansible_ssh_private_key_file=/home/vagrant/node1_private_key
+master-1 ansible_connection=local host_ip=172.17.177.11
+node-1 host_ip=172.17.177.12 ansible_ssh_host=172.17.177.12 ansible_ssh_private_key_file=/home/vagrant/node-1_private_key
+node-2 host_ip=172.17.177.13 ansible_ssh_host=172.17.177.13 ansible_ssh_private_key_file=/home/vagrant/node-2_private_key
 
 [kube-docker]
-master1
-node1
+master-1
+node-1
+node-2
 
 [kube-masters]
-master1
+master-1
 
 [kube-nodes]
-node1
+node-1
+node-2
+
+[kube-es]
+node-1
+node-2

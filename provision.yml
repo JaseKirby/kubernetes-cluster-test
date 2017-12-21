@@ -1,6 +1,6 @@
 ---
 - name: copy key files and change permissions
-  hosts: master1
+  hosts: master-1
   gather_facts: false
   tasks:
     - name: copy keys
@@ -10,11 +10,12 @@
         mode: 0400
         owner: vagrant
       with_items:
-        - node1
+        - node-1
+        - node-2
 
 # should always be localhost so that keys can later be distributed out to clusert nodes from ansible server
 - name: kube-cert authority
-  hosts: master1
+  hosts: master-1
   gather_facts: false
   become: true
   roles:
@@ -31,15 +32,6 @@
   tags:
     - kube-docker
 
-- name: kube-nodes config
-  hosts: kube-nodes
-  gather_facts: false
-  become: true
-  roles:
-    - kube-node
-  tags:
-    - kube-node
-
 - name: kube-masters config
   hosts: kube-masters
   gather_facts: false
@@ -48,3 +40,12 @@
     - kube-master
   tags:
     - kube-master
+
+- name: kube-nodes config
+  hosts: kube-nodes
+  gather_facts: false
+  become: true
+  roles:
+    - kube-node
+  tags:
+    - kube-node

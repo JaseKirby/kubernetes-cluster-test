@@ -3,6 +3,7 @@
   copy:
     src: "{{ kube_config_dir }}/pki/{{ inventory_hostname }}.key"
     dest: "{{ kube_config_dir }}/pki/{{ inventory_hostname }}.key"
+    mode: 600
 
 - name: copy crt from cert authority
   copy:
@@ -14,8 +15,6 @@
     src: "{{ kube_config_dir }}/pki/{{ item }}"
     dest: "{{ kube_config_dir }}/pki/{{ item }}"
   with_items:
-    - "{{ inventory_hostname }}.key"
-    - "{{ inventory_hostname }}.crt"
     - ca.crt
     - proxy.key
     - proxy.crt
