@@ -10,6 +10,7 @@
     - { name: "net.bridge.bridge-nf-call-iptables", value: 1 }
   notify: kube sysctl reload
   ignore_errors: true
+  tags: kube-node.sysctl
 
 - name: net-tools
   yum:
@@ -114,9 +115,14 @@
     enabled: yes
     daemon_reload: yes
 
+- name: pause to allow node registration with masters
+  pause:
+    seconds: 20
+
 - name: apply labels for node on kube primary master
   command: kubectl label nodes {{ inventory_hostname }} {{ item }} --overwrite
   with_items: "{{ kube_node_labels }}"
   changed_when: false
-  delegate_to: kube_primary_master
+  delegate_to: "{{ kube_primary_master }}"
   when: "'kube-masters' not in group_names"
+  tags: kube-node.labels

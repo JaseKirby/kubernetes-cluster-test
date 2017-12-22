@@ -14,6 +14,9 @@ kubelet client cert generation
     openssl x509 -req -in node1.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out node1.crt -days 10000
     node1 is still in notReady state and I think it has to do with api server not trusting this cert and kubelet 10250 port with host IP maybe cert needs specific host IP
 
+kubectl bash completion
+    echo "source <(kubectl completion bash)" >> ~/.bashrc
+
 To Access Dashboard
 kubectl -n kube-system edit service kubernetes-dashboard
     change ClusterIp to node port
