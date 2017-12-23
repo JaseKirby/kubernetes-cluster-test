@@ -12,7 +12,7 @@
   command: kubectl apply -f {{ kube_config_dir }}/net/core-dns.yml
 
 - name: kubectl kube-dashboard
-  command: kubectl apply -f {{ kube_config_dir }}/kube-dashboard.yml
+  command: kubectl apply -f {{ kube_config_dir }}/ui/kube-dashboard.yml
 
 - name: kubectl kubelet role
   command: kubectl apply -f {{ kube_config_dir }}/roles/kube-apiserver-kubelet-cluster-role.yml

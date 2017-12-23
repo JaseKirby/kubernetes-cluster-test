@@ -9,6 +9,19 @@
     src: etc/admin.config.j2
     dest: /root/.kube/config
 
+- name: kubernetes master directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - "{{ kube_config_dir }}/net"
+    - "{{ kube_config_dir }}/roles"
+    - "{{ kube_config_dir }}/logging"
+    - "{{ kube_config_dir }}/ingress"
+    - "{{ kube_config_dir}}/ui"
+    - "{{ kube_config_dir }}/ns"
+    - "{{ kube_config_dir }}/sa"
+
 - name: kubeconfig files
   template:
     src: etc/{{ item }}.config.j2
@@ -59,7 +72,7 @@
 
 - name: kube-dashboard file
   template:
-    src: kube-dashboard.yml
+    src: etc/ui/kube-dashboard.yml
     dest: "{{ kube_config_dir }}/kube-dashboard.yml"
   notify: kubectl kube-dashboard
   when: inventory_hostname == kube_primary_master and kube_dashboard_install

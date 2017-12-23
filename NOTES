@@ -46,8 +46,6 @@ kube apiserver removed kube front proxy auth and headers
     # - --requestheader-extra-headers-prefix=X-Remote-Extra-
     # - --requestheader-client-ca-file=/etc/kubernetes/pki/front-proxy-ca.crt
 
-set different read permissions for /root/.kube/admin.key
-
 do this commmand for all nodes that need to run fluentd
     kubectl label nodes master1 beta.kubernetes.io/fluentd-ds-ready=true
 

@@ -48,11 +48,6 @@
   with_items:
     - "{{ kube_config_dir }}/manifests"
     - "{{ kube_config_dir }}/pki"
-    - "{{ kube_config_dir }}/net"
-    - "{{ kube_config_dir }}/roles"
-    - "{{ kube_config_dir }}/logging"
-    - "{{ kube_config_dir }}/ingress"
-    - /var/lib/kubelet/pki
     - /etc/systemd/system/kubelet.service.d
     - /etc/systemd/system/kube-proxy.service.d
     - /etc/cni/net.d
@@ -115,7 +110,7 @@
     enabled: yes
     daemon_reload: yes
 
-- name: pause to allow node registration with masters
+- name: pause to allow node registration with master
   pause:
     seconds: 20
 
