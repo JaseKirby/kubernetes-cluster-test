@@ -12,9 +12,10 @@ kube_core_dns_image: coredns/coredns:0.9.10
 kube_dashboard_install: false
 kube_dashboard_init_image: gcr.io/google_containers/kubernetes-dashboard-init-amd64:v1.0.1
 kube_dashboard_image: gcr.io/google_containers/kubernetes-dashboard-amd64:v1.7.1
-kube_elasticsearch_image: gcr.io/google-containers/elasticsearch:v5.6.4
+kube_elasticsearch_image: docker.elastic.co/elasticsearch/elasticsearch:6.1.1
 kube_fluentd_elasticsearch_image: gcr.io/google-containers/fluentd-elasticsearch:v2.0.2
-kube_kibana_image: docker.elastic.co/kibana/kibana:5.6.4
+kube_kibana_image: docker.elastic.co/kibana/kibana-oss:6.1.1
 kube_nginx_ingress_backend: gcr.io/google_containers/defaultbackend:1.4
 kube_nginx_ingress_controller: quay.io/kubernetes-ingress-controller/nginx-ingress-controller:0.9.0
 kube_master_labels: []
+kube_es_ds_label_name: example.com/es-ds-ready

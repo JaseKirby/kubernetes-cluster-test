@@ -76,24 +76,26 @@
     dest: "{{ kube_config_dir }}/kube-dashboard.yml"
   notify: kubectl kube-dashboard
   when: inventory_hostname == kube_primary_master and kube_dashboard_install
-  tags: kubedash
+  tags: kube-master.dash
 
 - name: token auth file
   template:
-    src: token-auth.csv
+    src: etc/pki/token-auth.csv
     dest: "{{ kube_config_dir }}/pki/token-auth.csv"
   when: inventory_hostname == kube_primary_master
+  tags: kube-master.es-svc
 
-- name: elasticsearch stateful set file
+- name: elasticsearch daemonset file
   template:
-    src: etc/logging/es-statefulset.yml
-    dest: "{{ kube_config_dir }}/logging/es-statefulset.yml"
+    src: etc/logging/es-ds.yml
+    dest: "{{ kube_config_dir }}/logging/es-ds.yml"
   when: inventory_hostname == kube_primary_master
+  tags: kube-master.es-ds
 
 - name: elasticsearch service file
   template:
-    src: etc/logging/es-service.yml
-    dest: "{{ kube_config_dir }}/logging/es-service.yml"
+    src: etc/logging/es-svc.yml
+    dest: "{{ kube_config_dir }}/logging/es-svc.yml"
   when: inventory_hostname == kube_primary_master
 
 - name: fluentd config map file
@@ -110,14 +112,14 @@
 
 - name: kibana deployment file
   template:
-    src: etc/logging/kibana-deployment.yml
-    dest: "{{ kube_config_dir }}/logging/kibana-deployment.yml"
+    src: etc/logging/kibana-deploy.yml
+    dest: "{{ kube_config_dir }}/logging/kibana-deploy.yml"
   when: inventory_hostname == kube_primary_master
 
 - name: kibana service file
   template:
-    src: etc/logging/kibana-service.yml
-    dest: "{{ kube_config_dir }}/logging/kibana-service.yml"
+    src: etc/logging/kibana-svc.yml
+    dest: "{{ kube_config_dir }}/logging/kibana-svc.yml"
   when: inventory_hostname == kube_primary_master
 
 - name: nginx-ingress namespace

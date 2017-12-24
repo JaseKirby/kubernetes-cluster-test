@@ -1,0 +1,22 @@
+---
+- name: increase vm max map count
+  sysctl:
+    name: vm.max_map_count
+    value: 262144
+    state: present
+    sysctl_file: "{{ kube_es_sysctl_file }}"
+    reload: yes
+
+# https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html#_notes_for_production_use_and_defaults
+- name: elasticsearch volume directory
+  file:
+    path: "{{ kube_es_data_volume_dir }}"
+    state: directory
+    group: 1000
+    mode: g+rwx
+
+- name: apply elasticsearch daemonset labels on kube primary master
+  command: kubectl label nodes {{ inventory_hostname }} {{ kube_es_label }} --overwrite
+  changed_when: false
+  delegate_to: "{{ kube_primary_master }}"
+  tags: kube-es.labels

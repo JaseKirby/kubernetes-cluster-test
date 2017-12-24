@@ -1,0 +1,5 @@
+---
+kube_primary_master: "{{ groups['kube-masters'][0] }}"
+kube_es_sysctl_file: /etc/sysctl.d/97-kube-es.conf
+kube_es_label: example.com/es-ds-ready=true
+kube_es_data_volume_dir: /var/lib/elasticsearch

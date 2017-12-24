@@ -49,3 +49,12 @@
     - kube-node
   tags:
     - kube-node
+
+- name: kube-es config
+  hosts: kube-es
+  gather_facts: false
+  become: true
+  roles:
+    - kube-es
+  tags: 
+    - kube-es

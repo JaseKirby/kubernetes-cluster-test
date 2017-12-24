@@ -1,0 +1,61 @@
+---
+apiVersion: apps/v1beta2
+kind: DaemonSet
+metadata:
+  name: elasticsearch-logging
+  namespace: kube-system
+  labels:
+    app: elasticsearch-logging
+spec:
+  selector:
+    matchLabels:
+      app: elasticsearch-logging
+  template:
+    metadata:
+      labels:
+        app: elasticsearch-logging
+    spec:
+      hostNetwork: true
+      securityContext:
+        runAsUser: 1000
+        fsGroup: 1000
+      containers:
+      - name: elasticsearch-logging
+        image: {{ kube_elasticsearch_image }}
+        resources:
+          # need more cpu upon initialization, therefore burstable class
+          limits:
+            cpu: 1000m
+          requests:
+            cpu: 100m
+        env:
+        - name: ES_JAVA_OPTS
+          value: -Xms512m -Xmx512m -XX:-AssumeMP
+        - name: bootstrap.memory_lock
+          value: "false"
+        - name: cluster.name
+          value: es-cluster
+        - name: discovery.zen.minimum_master_nodes
+          value: "1"
+          # {{ ( groups['kube-es'] | length / 2) + 1 }}
+          # (master_eligible_nodes / 2) + 1
+        # - name: discovery.zen.ping.unicast.hosts
+        #   value: "["host1", "host2"]"
+        ports:
+        - containerPort: 9200
+          name: db
+          hostPort: 9200
+        - containerPort: 9300
+          name: peer
+          hostPort: 9300
+        volumeMounts:
+        - name: es-data
+          mountPath: /usr/share/elasticsearch/data
+      nodeSelector:
+        {{ kube_es_ds_label_name }}: "true"
+      volumes:
+      - name: es-data
+        hostPath:
+          path: /var/lib/elasticsearch
+          type: DirectoryOrCreate
+

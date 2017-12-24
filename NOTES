@@ -73,3 +73,5 @@ prove nginx-ingress works
 
 still a bug in sysctl values in kube-node
     a certain amount of time needs to pass after ipv4 forward to put  in bridge call iptables
+
+create ingress for kibana
