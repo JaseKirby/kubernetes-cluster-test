@@ -122,27 +122,27 @@
     dest: "{{ kube_config_dir }}/logging/kibana-svc.yml"
   when: inventory_hostname == kube_primary_master
 
-- name: nginx-ingress namespace
-  template:
-    src: etc/ingress/ingress-nginx-ns.yml
-    dest: "{{ kube_config_dir }}/ingress/ingress-nginx-ns.yml"
-  when: inventory_hostname == kube_primary_master
-  notify: kubectl ingress-ns
+# - name: nginx-ingress namespace
+#   template:
+#     src: etc/ingress/ingress-nginx-ns.yml
+#     dest: "{{ kube_config_dir }}/ingress/ingress-nginx-ns.yml"
+#   when: inventory_hostname == kube_primary_master
+#   notify: kubectl ingress-ns
 
-- name: nginx ingress config
-  template:
-    src: etc/ingress/{{ item }}.yml
-    dest: "{{ kube_config_dir }}/ingress/{{ item }}.yml"
-  when: inventory_hostname == kube_primary_master
-  notify: kubectl ingress
-  with_items:
-    - nginx-configmap
-    - nginx-default-backend
-    - nginx-ingress-deploy
-    - nginx-ingress-service
-    - nginx-rbac
-    - nginx-tcp-services-configmap
-    - nginx-udp-service-configmap
+# - name: nginx ingress config
+#   template:
+#     src: etc/ingress/{{ item }}.yml
+#     dest: "{{ kube_config_dir }}/ingress/{{ item }}.yml"
+#   when: inventory_hostname == kube_primary_master
+#   notify: kubectl ingress
+#   with_items:
+#     - nginx-configmap
+#     - nginx-default-backend
+#     - nginx-ingress-deploy
+#     - nginx-ingress-service
+#     - nginx-rbac
+#     - nginx-tcp-services-configmap
+#     - nginx-udp-service-configmap
 
 - name: wait for etcd port to become responsive
   wait_for:

@@ -29,13 +29,13 @@ Vagrant.configure("2") do |config|
       machine.vm.provider "virtualbox" do |v|
         v.memory = 3024
       end
-      machine.vm.provision :ansible_local do |ansible|
-        ansible.playbook       = "test.yml"
-        ansible.verbose        = true
-        ansible.install        = true
-        ansible.limit          = "all" # or only "nodes" group, etc.
-        ansible.inventory_path = "inventory"
-      end
+      # machine.vm.provision :ansible_local do |ansible|
+      #   ansible.playbook       = "test.yml"
+      #   ansible.verbose        = true
+      #   ansible.install        = true
+      #   ansible.limit          = "all" # or only "nodes" group, etc.
+      #   ansible.inventory_path = "inventory"
+      # end
     end
 
 end

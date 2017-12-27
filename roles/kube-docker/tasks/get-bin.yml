@@ -1,7 +1,7 @@
 ---
 - name: docker binaries
   copy:
-    src: /vagrant/private/repo/docker/{{ item }}
+    src: private/repo/docker/{{ item }}
     dest: /usr/bin/{{ item }}
     mode: 0755
   with_items:

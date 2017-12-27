@@ -48,6 +48,7 @@
   with_items:
     - "{{ kube_config_dir }}/manifests"
     - "{{ kube_config_dir }}/pki"
+    - /var/lib/kubelet
     - /etc/systemd/system/kubelet.service.d
     - /etc/systemd/system/kube-proxy.service.d
     - /etc/cni/net.d

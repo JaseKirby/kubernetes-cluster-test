@@ -1,7 +1,7 @@
 ---
 - name: kubernetes binaries
   copy:
-    src: /vagrant/private/repo/kubernetes/server/bin/{{ item }}
+    src: private/repo/kubernetes/server/bin/{{ item }}
     dest: /usr/bin/{{ item }}
     mode: 0755
   with_items:
@@ -11,7 +11,7 @@
 
 - name: cni 0.6.0 binaries
   copy:
-    src: /vagrant/private/repo/cni-0.6.0/{{ item }}
+    src: private/repo/cni-0.6.0/{{ item }}
     dest: /opt/cni/bin/{{ item }}
     mode: 0755
   with_items:

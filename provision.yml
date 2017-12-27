@@ -1,21 +1,26 @@
 ---
 - name: copy key files and change permissions
-  hosts: master-1
+  hosts: localhost
   gather_facts: false
   tasks:
+    - name: private key dir
+      file:
+        path: ~/tmp/vagrant/keys
+        state: directory
+
     - name: copy keys
       copy:
-        src: /vagrant/.vagrant/machines/{{ item }}/virtualbox/private_key
-        dest: /home/vagrant/{{ item }}_private_key
+        src: ./.vagrant/machines/{{ item }}/virtualbox/private_key
+        dest: ~/tmp/vagrant/keys/{{ item }}_private_key
         mode: 0400
-        owner: vagrant
       with_items:
+        - master-1
         - node-1
         - node-2
 
 # should always be localhost so that keys can later be distributed out to clusert nodes from ansible server
 - name: kube-cert authority
-  hosts: master-1
+  hosts: localhost
   gather_facts: false
   become: true
   roles:
