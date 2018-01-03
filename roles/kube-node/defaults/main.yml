@@ -3,8 +3,8 @@ kube_env_name: default
 kube_version: 1.8.2
 kube_primary_master: "{{ groups['kube-masters'][0] }}"
 kube_primary_master_ip: "{{ hostvars[kube_primary_master]['host_ip'] }}"  # ovverride with VIP for manager machines with multi manager setup
-kube_cluster_short_name: cluster
-kube_cluster_name: cluster.local
+kube_cluster_short_name: kube.example
+kube_cluster_name: kube.example.com
 kube_config_dir: /etc/kubernetes
 kube_cluster_pod_cidr: "10.10.0.0/16"
 kube_service_cluster_ip_range: "10.77.0.0/16"

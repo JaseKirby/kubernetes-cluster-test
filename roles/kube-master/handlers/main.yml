@@ -25,3 +25,7 @@
   
 - name: kubectl ingress
   command: kubectl apply -f {{ kube_config_dir }}/ingress/
+
+- name: kubectl sa
+  command: kubectl apply -f {{ kube_config_dir }}/sa/
+  
